@@ -97,6 +97,6 @@ hue-6-2: #e6c07b
 
 /* Mac 风格代码块样式 */
 #nice pre.mac-style code.hljs {
-  padding: 38px 16px 16px 16px;
+  padding: 0;
   background: #282c34;
 }

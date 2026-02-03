@@ -225,22 +225,26 @@
 #nice pre.mac-style code {
   display: block;
   border-radius: 8px;
-  padding: 38px 16px 16px 16px;  /* 顶部留出 header 空间 */
+  background: #282c34;
+  padding: 0;
+  margin: 0;
+  line-height: 0;  /* 使用 0 消除顶部空隙 */
+  vertical-align: top;
 }
 
-/* Mac 窗口头部 - 绝对定位 */
+/* Mac 窗口头部 - 流式布局（兼容微信编辑器） */
 #nice .mac-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   display: flex;
+  position: relative;
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
   background: #1d2127;
   border-bottom: none;
   border-radius: 8px 8px 0 0;
+  margin: 0;
+  line-height: 0;  /* 消除顶部空隙 - 必须为 0 */
+  font-size: 0;
 }
 
 /* Mac 窗口控制按钮容器 */
@@ -250,40 +254,37 @@
   gap: 6px;
 }
 
-/* Mac 头部后的代码内容区域 */
-#nice pre.mac-style code .mac-header + span,
-#nice pre.mac-style code .mac-header + .hljs-meta,
-#nice pre.mac-style code .mac-header + .hljs-comment,
-#nice pre.mac-style code .mac-header + .hljs-keyword,
-#nice pre.mac-style code .mac-header + .hljs-string,
-#nice pre.mac-style code .mac-header + .hljs-title,
-#nice pre.mac-style code .mac-header + .hljs-function,
-#nice pre.mac-style code .mac-header + .hljs-built_in,
-#nice pre.mac-style code .mac-header + .hljs-class,
-#nice pre.mac-style code .mac-header + .hljs-attr,
-#nice pre.mac-style code .mac-header + .hljs-number,
-#nice pre.mac-style code .mac-header + .hljs-variable,
-#nice pre.mac-style code .mac-header + .hljs-type,
-#nice pre.mac-style code .mac-header + .hljs-literal,
-#nice pre.mac-style code .mac-header + .hljs-symbol,
-#nice pre.mac-style code .mac-header + .hljs-bullet,
-#nice pre.mac-style code .mac-header + .hljs-params,
-#nice pre.mac-style code .hljs-meta,
-#nice pre.mac-style code .hljs-comment,
-#nice pre.mac-style code .hljs-keyword,
-#nice pre.mac-style code .hljs-string,
-#nice pre.mac-style code .hljs-title,
-#nice pre.mac-style code .hljs-function,
-#nice pre.mac-style code .hljs-built_in,
-#nice pre.mac-style code .hljs-class,
-#nice pre.mac-style code .hljs-attr,
-#nice pre.mac-style code .hljs-number,
-#nice pre.mac-style code .hljs-variable,
-#nice pre.mac-style code .hljs-type,
-#nice pre.mac-style code .hljs-literal,
-#nice pre.mac-style code .hljs-symbol,
-#nice pre.mac-style code .hljs-bullet,
-#nice pre.mac-style code .hljs-params {
+/* mac-header 内部元素恢复字体大小和行高 */
+#nice .mac-dots,
+#nice .mac-lang,
+#nice .mac-dot {
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* Mac 代码内容容器 */
+#nice .mac-body {
+  display: block;
+  padding: 16px;
+}
+
+/* 代码内容区域内的 span 保持 inline */
+#nice .mac-body .hljs-meta,
+#nice .mac-body .hljs-comment,
+#nice .mac-body .hljs-keyword,
+#nice .mac-body .hljs-string,
+#nice .mac-body .hljs-title,
+#nice .mac-body .hljs-function,
+#nice .mac-body .hljs-built_in,
+#nice .mac-body .hljs-class,
+#nice .mac-body .hljs-attr,
+#nice .mac-body .hljs-number,
+#nice .mac-body .hljs-variable,
+#nice .mac-body .hljs-type,
+#nice .mac-body .hljs-literal,
+#nice .mac-body .hljs-symbol,
+#nice .mac-body .hljs-bullet,
+#nice .mac-body .hljs-params {
   display: inline;
 }
 
