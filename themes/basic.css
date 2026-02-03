@@ -221,30 +221,34 @@
   border-radius: 8px;
   overflow: hidden;
   position: relative;
-}
-#nice pre.mac-style code {
-  display: block;
-  border-radius: 8px;
-  background: #282c34;
-  padding: 0;
-  margin: 0;
-  line-height: 0;  /* 使用 0 消除顶部空隙 */
-  vertical-align: top;
+  display: block;  /* 确保块级显示 */
 }
 
-/* Mac 窗口头部 - 流式布局（兼容微信编辑器） */
-#nice .mac-header {
+/* Mac 窗口头部 - 移到 code 外部，不随滚动移动 */
+#nice pre.mac-style .mac-header {
   display: flex;
   position: relative;
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
   background: #1d2127;
-  border-bottom: none;
   border-radius: 8px 8px 0 0;
   margin: 0;
-  line-height: 0;  /* 消除顶部空隙 - 必须为 0 */
+  line-height: 0;
   font-size: 0;
+  width: 100%;  /* 占满整个宽度 */
+  box-sizing: border-box;
+}
+
+#nice pre.mac-style code {
+  display: block;
+  border-radius: 0 0 8px 8px;  /* 只有底部圆角 */
+  background: #282c34;
+  padding: 0;
+  margin: 0;
+  margin-top: -4px;  /* 消除与 header 之间的微小间隙 */
+  line-height: 0;
+  vertical-align: top;
 }
 
 /* Mac 窗口控制按钮容器 */
