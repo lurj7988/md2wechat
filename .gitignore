@@ -24,7 +24,7 @@ yarn-error.log*
 
 dist
 package-lock.json
-lib
+
 
 # claude temp files
 tmpclaude-*-cwd
