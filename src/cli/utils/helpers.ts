@@ -23,8 +23,12 @@ export async function fileExists(filePath: string): Promise<boolean> {
 export async function ensureDir(dirPath: string): Promise<void> {
   try {
     await fs.mkdir(dirPath, { recursive: true });
-  } catch {
+  } catch (error) {
+    const err = error as NodeJS.ErrnoException;
     // Ignore error if directory already exists
+    if (err.code !== 'EEXIST') {
+      throw error;
+    }
   }
 }
 

@@ -4,7 +4,8 @@
 
 import juice from 'juice';
 import { promises as fs } from 'fs';
-import { resolve, join } from 'path';
+import { resolve, join, dirname } from 'path';
+import { logger } from '../cli/utils/logger';
 
 /**
  * Converter options
@@ -51,15 +52,17 @@ export class Converter {
       join(this.themeBasePath, 'code', `${this.codeThemeName}.css`)
     ];
 
-    try {
-      const cssArray = await Promise.all(
-        paths.map((path) => fs.readFile(path, 'utf-8').catch(() => ''))
-      );
-      return cssArray.join('\n');
-    } catch (error) {
-      console.warn('Warning: Theme files not found, using basic conversion');
-      return '';
-    }
+    const cssArray = await Promise.all(
+      paths.map(async (path) => {
+        try {
+          return await fs.readFile(path, 'utf-8');
+        } catch (error) {
+          logger.debug(`Theme file not found: ${path} - ${(error as Error).message}`);
+          return '';
+        }
+      })
+    );
+    return cssArray.join('\n');
   }
 
   /**
@@ -111,6 +114,8 @@ export class Converter {
    * Save HTML to file
    */
   async saveToFile(html: string, filePath: string): Promise<void> {
+    const dir = dirname(filePath);
+    await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(filePath, html, 'utf-8');
   }
 
@@ -118,7 +123,7 @@ export class Converter {
    * Convert markdown file to HTML file
    */
   async convertFile(inputPath: string, outputPath: string): Promise<void> {
-    const { Parser } = await import('./parser.js');
+    const { Parser } = await import('./parser');
     const parser = new Parser();
     const html = await parser.parseFile(inputPath);
     const result = await this.process(html);

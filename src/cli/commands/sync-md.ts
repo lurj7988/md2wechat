@@ -3,16 +3,16 @@
  */
 
 import { Command } from 'commander';
-import { Parser } from '../../core/parser.js';
-import { Converter } from '../../core/converter.js';
-import { WeChatApi } from '../../core/wechat-api.js';
-import { ImageHandler } from '../../core/image-handler.js';
-import type { ArticleData } from '../../types/index.js';
-import { readFile, fileExists, changeExtension, extractTitle, extractSummary, writeFile } from '../utils/helpers.js';
+import { Parser } from '../../core/parser';
+import { Converter } from '../../core/converter';
+import { WeChatApi } from '../../core/wechat-api';
+import { ImageHandler } from '../../core/image-handler';
+import type { ArticleData } from '../../types/index';
+import { readFile, fileExists, changeExtension, extractTitle, extractSummary, writeFile } from '../utils/helpers';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { loadConfig } from '../utils/config.js';
-import { logger } from '../utils/logger.js';
+import { loadConfig } from '../utils/config';
+import { logger } from '../utils/logger';
 
 /**
  * Get the assets directory path
@@ -111,6 +111,8 @@ async function syncMdAction(
 
     // Upload cover image - WeChat API requires thumb_media_id for draft creation
     let thumbMediaId: string;
+    const defaultCoverPath = join(getAssetsPath(), 'default-cover.png');
+
     if (options.cover) {
       logger.info(`Uploading cover image: ${options.cover}`);
       try {
@@ -120,12 +122,10 @@ async function syncMdAction(
         logger.warning(`Failed to upload cover image: ${(error as Error).message}`);
         // Fallback to default cover
         logger.info('Using default cover image');
-        const defaultCoverPath = join(getAssetsPath(), 'default-cover.png');
         thumbMediaId = await wechatApi.uploadThumb(defaultCoverPath);
       }
     } else {
       logger.debug('Using default cover image');
-      const defaultCoverPath = join(process.cwd(), 'default-cover.png');
       thumbMediaId = await wechatApi.uploadThumb(defaultCoverPath);
     }
 

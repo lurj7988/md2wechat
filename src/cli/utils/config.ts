@@ -5,7 +5,7 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import dotenv from 'dotenv';
-import type { Config, ConfigFile, WeChatConfig, ThemeConfig } from '../../types/index.js';
+import type { Config, ConfigFile, WeChatConfig, ThemeConfig } from '../../types/index';
 
 /**
  * Load environment variables from .env file

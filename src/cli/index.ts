@@ -31,12 +31,12 @@ program.addCommand(convertCommand);
 program.addCommand(syncMdCommand);
 program.addCommand(syncHtmlCommand);
 
-// Parse arguments
-program.parse();
-
-// Enable debug mode if requested
+// Enable debug mode if requested (before parse to catch parsing errors)
 const options = program.opts();
 if (options.debug) {
   logger.setDebugMode(true);
   logger.debug('Debug mode enabled');
 }
+
+// Parse arguments
+program.parse();

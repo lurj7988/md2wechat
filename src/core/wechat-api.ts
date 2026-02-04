@@ -6,13 +6,14 @@ import https from 'https';
 import fs from 'fs';
 import FormData from 'form-data';
 import { URL } from 'url';
+import { logger } from '../cli/utils/logger';
 import type {
   WeChatConfig,
   ArticleData,
   DraftItem,
   UploadMaterialResponse,
   CreateDraftResponse
-} from '../types/index.js';
+} from '../types/index';
 
 /**
  * WeChat API response (raw snake_case)
@@ -127,22 +128,74 @@ export class WeChatApi {
   }
 
   /**
+   * Token expiry buffer in milliseconds (5 minutes)
+   */
+  private static readonly TOKEN_EXPIRY_BUFFER_MS = 5 * 60 * 1000;
+  /**
+   * Token expiry buffer in seconds (5 minutes)
+   */
+  private static readonly TOKEN_EXPIRY_BUFFER_SEC = 5 * 60;
+
+  /**
+   * Convert ArticleData from camelCase to snake_case for WeChat API
+   */
+  private convertArticleToSnakeCase(article: ArticleData): Record<string, unknown> {
+    const converted: Record<string, unknown> = {
+      title: article.title,
+      author: article.author,
+      content: article.content
+    };
+
+    if (article.digest) {
+      converted.digest = article.digest;
+    }
+
+    if (article.contentSourceUrl) {
+      converted.content_source_url = article.contentSourceUrl;
+    }
+
+    if (article.thumbMediaId) {
+      converted.thumb_media_id = article.thumbMediaId;
+    }
+
+    if (article.showCoverPic !== undefined) {
+      converted.show_cover_pic = article.showCoverPic;
+    }
+
+    if (article.needOpenComment !== undefined) {
+      converted.need_open_comment = article.needOpenComment;
+    }
+
+    if (article.onlyFansCanComment !== undefined) {
+      converted.only_fans_can_comment = article.onlyFansCanComment;
+    }
+
+    return converted;
+  }
+
+  /**
    * Get access token
    */
   async getAccessToken(): Promise<string> {
     // 如果 token 还有 5 分钟过期，直接返回
-    if (this.accessToken && Date.now() < this.tokenExpireTime - 300000) {
+    if (this.accessToken && Date.now() < this.tokenExpireTime - WeChatApi.TOKEN_EXPIRY_BUFFER_MS) {
       return this.accessToken;
     }
 
+    const queryParams = new URLSearchParams({
+      grant_type: 'client_credential',
+      appid: this.config.appId,
+      secret: this.config.appSecret
+    });
+
     const response = await this.request({
-      path: `/cgi-bin/token?grant_type=client_credential&appid=${this.config.appId}&secret=${this.config.appSecret}`,
+      path: `/cgi-bin/token?${queryParams.toString()}`,
       method: 'GET'
     });
 
     if (response.access_token && response.expires_in) {
       this.accessToken = response.access_token;
-      this.tokenExpireTime = Date.now() + (response.expires_in - 300) * 1000; // 提前5分钟过期
+      this.tokenExpireTime = Date.now() + (response.expires_in - WeChatApi.TOKEN_EXPIRY_BUFFER_SEC) * 1000; // 提前5分钟过期
       return this.accessToken;
     }
 
@@ -164,17 +217,17 @@ export class WeChatApi {
       url.searchParams.append('access_token', token);
       url.searchParams.append('type', 'image');
 
-      form.submit(url as unknown as string, (err, res) => {
+      form.submit(url.toString(), (err, res) => {
         if (err) {
           reject(new Error(`Upload Error: ${err.message}`));
           return;
         }
 
         let data = '';
-        res?.on('data', (chunk) => {
+        res.on('data', (chunk) => {
           data += chunk;
         });
-        res?.on('end', () => {
+        res.on('end', () => {
           if (!data || data.trim() === '') {
             reject(new Error('Empty response from WeChat API'));
             return;
@@ -218,17 +271,17 @@ export class WeChatApi {
       url.searchParams.append('access_token', token);
       url.searchParams.append('type', 'thumb');
 
-      form.submit(url as unknown as string, (err, res) => {
+      form.submit(url.toString(), (err, res) => {
         if (err) {
           reject(new Error(`Upload Error: ${err.message}`));
           return;
         }
 
         let data = '';
-        res?.on('data', (chunk) => {
+        res.on('data', (chunk) => {
           data += chunk;
         });
-        res?.on('end', () => {
+        res.on('end', () => {
           if (!data || data.trim() === '') {
             reject(new Error('Empty response from WeChat API'));
             return;
@@ -256,49 +309,14 @@ export class WeChatApi {
   async createDraft(articles: ArticleData[]): Promise<CreateDraftResponse> {
     const token = await this.getAccessToken();
 
-    console.log('📤 发送数据预览:');
-    console.log('  Articles count:', articles.length);
-    console.log('  Title:', articles[0].title);
-    console.log('  Content length:', articles[0].content.length);
-    console.log('  Content preview:', articles[0].content.substring(0, 200));
+    logger.debug(`Creating draft: ${articles.length} article(s)`);
+    logger.debug(`Title: ${articles[0].title}`);
+    logger.debug(`Content length: ${articles[0].content.length}`);
 
-    // Convert article data from camelCase to snake_case for WeChat API
-    const convertedArticles = articles.map((article) => {
-      const converted: Record<string, unknown> = {
-        title: article.title,
-        author: article.author,
-        content: article.content
-      };
-
-      if (article.digest) {
-        converted.digest = article.digest;
-      }
-
-      if (article.contentSourceUrl) {
-        converted.content_source_url = article.contentSourceUrl;
-      }
-
-      if (article.thumbMediaId) {
-        converted.thumb_media_id = article.thumbMediaId;
-      }
-
-      if (article.showCoverPic !== undefined) {
-        converted.show_cover_pic = article.showCoverPic;
-      }
-
-      if (article.needOpenComment !== undefined) {
-        converted.need_open_comment = article.needOpenComment;
-      }
-
-      if (article.onlyFansCanComment !== undefined) {
-        converted.only_fans_can_comment = article.onlyFansCanComment;
-      }
-
-      return converted;
-    });
+    const convertedArticles = articles.map((article) => this.convertArticleToSnakeCase(article));
 
     const response = await this.request({
-      path: `/cgi-bin/draft/add?access_token=${token}`,
+      path: `/cgi-bin/draft/add?access_token=${encodeURIComponent(token)}`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -325,45 +343,14 @@ export class WeChatApi {
   async updateDraft(mediaId: string, index: number, article: ArticleData): Promise<void> {
     const token = await this.getAccessToken();
 
-    console.log('📤 更新草稿数据预览:');
-    console.log('  Media ID:', mediaId);
-    console.log('  Index:', index);
-    console.log('  Title:', article.title);
-    console.log('  Content length:', article.content.length);
+    logger.debug(`Updating draft: mediaId=${mediaId}, index=${index}`);
+    logger.debug(`Title: ${article.title}`);
+    logger.debug(`Content length: ${article.content.length}`);
 
-    // Convert article data from camelCase to snake_case for WeChat API
-    const converted: Record<string, unknown> = {
-      title: article.title,
-      author: article.author,
-      content: article.content
-    };
-
-    if (article.digest) {
-      converted.digest = article.digest;
-    }
-
-    if (article.contentSourceUrl) {
-      converted.content_source_url = article.contentSourceUrl;
-    }
-
-    if (article.thumbMediaId) {
-      converted.thumb_media_id = article.thumbMediaId;
-    }
-
-    if (article.showCoverPic !== undefined) {
-      converted.show_cover_pic = article.showCoverPic;
-    }
-
-    if (article.needOpenComment !== undefined) {
-      converted.need_open_comment = article.needOpenComment;
-    }
-
-    if (article.onlyFansCanComment !== undefined) {
-      converted.only_fans_can_comment = article.onlyFansCanComment;
-    }
+    const converted = this.convertArticleToSnakeCase(article);
 
     await this.request({
-      path: `/cgi-bin/draft/update?access_token=${token}`,
+      path: `/cgi-bin/draft/update?access_token=${encodeURIComponent(token)}`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -383,7 +370,7 @@ export class WeChatApi {
     const token = await this.getAccessToken();
 
     const response = await this.request({
-      path: `/cgi-bin/draft/list?access_token=${token}`,
+      path: `/cgi-bin/draft/list?access_token=${encodeURIComponent(token)}`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -408,7 +395,7 @@ export class WeChatApi {
     const token = await this.getAccessToken();
 
     const response = await this.request({
-      path: `/cgi-bin/material/add_news?access_token=${token}`,
+      path: `/cgi-bin/material/add_news?access_token=${encodeURIComponent(token)}`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

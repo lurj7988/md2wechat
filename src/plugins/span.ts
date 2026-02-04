@@ -12,15 +12,6 @@ interface Token {
 interface PluginOptions {
   anchorClass?: string;
   addHeadingSpan?: boolean;
-  slugify?: (s: string, md: any) => string;
-}
-
-/**
- * Slugify function for creating URL-friendly IDs
- */
-function slugify(s: string, _md: any): string {
-  // This is kept for reference but not used in the current implementation
-  return s;
 }
 
 /**
@@ -84,8 +75,7 @@ function makeRule(_md: any, options: PluginOptions) {
 export default function (md: any, opts: PluginOptions = {}): void {
   const defaults: PluginOptions = {
     anchorClass: 'markdown-it-headingspan',
-    addHeadingSpan: true,
-    slugify
+    addHeadingSpan: true
   };
   const options = { ...defaults, ...opts };
   md.core.ruler.push('heading_span', makeRule(md, options));

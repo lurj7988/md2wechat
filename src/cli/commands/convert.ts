@@ -3,10 +3,10 @@
  */
 
 import { Command } from 'commander';
-import { Parser } from '../../core/parser.js';
-import { Converter } from '../../core/converter.js';
-import { readFile, writeFile, fileExists } from '../utils/helpers.js';
-import { logger } from '../utils/logger.js';
+import { Parser } from '../../core/parser';
+import { Converter } from '../../core/converter';
+import { readFile, writeFile, fileExists } from '../utils/helpers';
+import { logger } from '../utils/logger';
 
 /**
  * Convert command implementation

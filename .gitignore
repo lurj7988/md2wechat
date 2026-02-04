@@ -45,3 +45,5 @@ test-files/
 # ide
 .vscode/
 .idea/
+
+.claude

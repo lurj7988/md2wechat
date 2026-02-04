@@ -3,14 +3,14 @@
  */
 
 import { Command } from 'commander';
-import { WeChatApi } from '../../core/wechat-api.js';
-import { ImageHandler } from '../../core/image-handler.js';
-import type { ArticleData } from '../../types/index.js';
-import { readFile, fileExists } from '../utils/helpers.js';
+import { WeChatApi } from '../../core/wechat-api';
+import { ImageHandler } from '../../core/image-handler';
+import type { ArticleData } from '../../types/index';
+import { readFile, fileExists } from '../utils/helpers';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { loadConfig } from '../utils/config.js';
-import { logger } from '../utils/logger.js';
+import { loadConfig } from '../utils/config';
+import { logger } from '../utils/logger';
 
 /**
  * Get the assets directory path

@@ -3,15 +3,16 @@
  */
 
 import MarkdownIt from 'markdown-it';
-import type { MarkdownItOptions } from '../types/index.js';
-import hljs from '../highlight/lang.js';
+import type { MarkdownItOptions } from '../types/index';
+import hljs from '../highlight/lang';
+import { logger } from '../cli/utils/logger';
 
 // Import custom plugins
-import mathPlugin from '../plugins/math.js';
-import multiquotePlugin from '../plugins/multiquote.js';
-import spanPlugin from '../plugins/span.js';
-import tableContainerPlugin from '../plugins/table-container.js';
-import liPlugin from '../plugins/li.js';
+import mathPlugin from '../plugins/math';
+import multiquotePlugin from '../plugins/multiquote';
+import spanPlugin from '../plugins/span';
+import tableContainerPlugin from '../plugins/table-container';
+import liPlugin from '../plugins/li';
 
 // Import third-party plugins
 import markdownItDeflist from 'markdown-it-deflist';
@@ -81,7 +82,7 @@ export class Parser {
           // 将 mac-header 移到 code 外部，避免随滚动条移动
           return `<pre class="${preClass}">${macHeader}<code class="hljs">${macBodyStart}${formatted}${macBodyEnd}</code></pre>`;
         } catch (e) {
-          console.error('highlight error:', e);
+          logger.error(`Highlight error: ${(e as Error).message}`);
         }
       }
 

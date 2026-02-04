@@ -4,7 +4,8 @@
 
 import { promises as fs } from 'fs';
 import { join } from 'path';
-import { WeChatApi } from './wechat-api.js';
+import { WeChatApi } from './wechat-api';
+import { logger } from '../cli/utils/logger';
 
 /**
  * Image map type for local to WeChat URL mapping
@@ -62,7 +63,7 @@ export class ImageHandler {
     try {
       await fs.access(fullPath);
     } catch {
-      console.warn(`Warning: Image file not found: ${imagePath}`);
+      logger.warning(`Image file not found: ${imagePath}`);
       return imagePath;
     }
 
@@ -74,7 +75,7 @@ export class ImageHandler {
         return result.url;
       }
     } catch (error) {
-      console.error(`Failed to upload image: ${imagePath}`, error);
+      logger.error(`Failed to upload image: ${imagePath} - ${(error as Error).message}`);
       return imagePath; // 失败时保留原路径
     }
   }
@@ -116,7 +117,7 @@ export class ImageHandler {
       return html;
     }
 
-    console.log(`Found ${localImages.length} local image(s), uploading...`);
+    logger.info(`Found ${localImages.length} local image(s), uploading...`);
     const urlMap = await this.uploadImages(localImages, type);
     return this.replaceImageUrls(html, urlMap);
   }
