@@ -133,7 +133,7 @@ async function syncMdAction(
     logger.debug('Processing images...');
     const imageHandler = new ImageHandler({
       wechatApi,
-      baseDir: process.cwd()
+      baseDir: dirname(input)
     });
     const processedHtml = await imageHandler.processImages(wechatHtml);
 

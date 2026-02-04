@@ -182,20 +182,14 @@ export class WeChatApi {
       return this.accessToken;
     }
 
-    const queryParams = new URLSearchParams({
-      grant_type: 'client_credential',
-      appid: this.config.appId,
-      secret: this.config.appSecret
-    });
-
     const response = await this.request({
-      path: `/cgi-bin/token?${queryParams.toString()}`,
+      path: `/cgi-bin/token?grant_type=client_credential&appid=${this.config.appId}&secret=${this.config.appSecret}`,
       method: 'GET'
     });
 
     if (response.access_token && response.expires_in) {
       this.accessToken = response.access_token;
-      this.tokenExpireTime = Date.now() + (response.expires_in - WeChatApi.TOKEN_EXPIRY_BUFFER_SEC) * 1000; // 提前5分钟过期
+      this.tokenExpireTime = Date.now() + (response.expires_in - WeChatApi.TOKEN_EXPIRY_BUFFER_SEC) * 1000;
       return this.accessToken;
     }
 
@@ -217,17 +211,17 @@ export class WeChatApi {
       url.searchParams.append('access_token', token);
       url.searchParams.append('type', 'image');
 
-      form.submit(url.toString(), (err, res) => {
+      form.submit(url as unknown as string, (err, res) => {
         if (err) {
           reject(new Error(`Upload Error: ${err.message}`));
           return;
         }
 
         let data = '';
-        res.on('data', (chunk) => {
+        res?.on('data', (chunk) => {
           data += chunk;
         });
-        res.on('end', () => {
+        res?.on('end', () => {
           if (!data || data.trim() === '') {
             reject(new Error('Empty response from WeChat API'));
             return;
@@ -271,7 +265,7 @@ export class WeChatApi {
       url.searchParams.append('access_token', token);
       url.searchParams.append('type', 'thumb');
 
-      form.submit(url.toString(), (err, res) => {
+      form.submit(url as unknown as string, (err, res) => {
         if (err) {
           reject(new Error(`Upload Error: ${err.message}`));
           return;
@@ -309,14 +303,15 @@ export class WeChatApi {
   async createDraft(articles: ArticleData[]): Promise<CreateDraftResponse> {
     const token = await this.getAccessToken();
 
-    logger.debug(`Creating draft: ${articles.length} article(s)`);
-    logger.debug(`Title: ${articles[0].title}`);
-    logger.debug(`Content length: ${articles[0].content.length}`);
+    console.log('📤 发送数据预览:');
+    console.log('  Articles count:', articles.length);
+    console.log('  Title:', articles[0].title);
+    console.log('  Content length:', articles[0].content.length);
 
     const convertedArticles = articles.map((article) => this.convertArticleToSnakeCase(article));
 
     const response = await this.request({
-      path: `/cgi-bin/draft/add?access_token=${encodeURIComponent(token)}`,
+      path: `/cgi-bin/draft/add?access_token=${token}`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
