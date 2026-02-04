@@ -155,7 +155,8 @@ async function syncMdAction(
     // Sync to WeChat
     if (options.update) {
       logger.info(`Updating draft: ${options.update}`);
-      await wechatApi.updateDraft(options.update, options.index || 0, articleData as unknown as ArticleData);
+      const index = parseInt((options.index || '0') as string, 10);
+      await wechatApi.updateDraft(options.update, isNaN(index) ? 0 : index, articleData as unknown as ArticleData);
       logger.success('Draft updated successfully');
     } else {
       logger.info('Creating new draft...');

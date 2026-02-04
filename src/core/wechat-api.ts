@@ -353,7 +353,7 @@ export class WeChatApi {
       data: {
         media_id: mediaId,
         index,
-        articles: [converted]
+        articles: converted
       }
     });
   }

@@ -35,6 +35,7 @@ claude-*.txt
 
 # environment
 .env
+.venv
 
 # publish
 *.tgz
