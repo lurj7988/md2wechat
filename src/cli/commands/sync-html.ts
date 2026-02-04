@@ -1,0 +1,130 @@
+/**
+ * Sync-html command - Sync HTML to WeChat Official Account
+ */
+
+import { Command } from 'commander';
+import { WeChatApi } from '../../core/wechat-api.js';
+import { ImageHandler } from '../../core/image-handler.js';
+import type { ArticleData } from '../../types/index.js';
+import { readFile, fileExists } from '../utils/helpers.js';
+import { join } from 'path';
+import { loadConfig } from '../utils/config.js';
+import { logger } from '../utils/logger.js';
+
+/**
+ * Sync-html command implementation
+ */
+async function syncHtmlAction(
+  input: string,
+  options: {
+    title?: string;
+    author?: string;
+    digest?: string;
+    cover?: string;
+    update?: string;
+    index?: number;
+  }
+): Promise<void> {
+  try {
+    logger.title('Syncing HTML to WeChat Official Account');
+
+    // Check if input file exists
+    if (!(await fileExists(input))) {
+      logger.error(`Input file not found: ${input}`);
+      process.exit(1);
+    }
+
+    // Load configuration
+    const config = await loadConfig();
+
+    // Validate required options
+    if (!options.title) {
+      logger.error('Title is required for HTML sync. Use --title option.');
+      process.exit(1);
+    }
+
+    logger.info(`Reading: ${input}`);
+
+    // Read HTML content
+    const html = await readFile(input);
+
+    logger.info(`Title: ${options.title}`);
+    logger.info(`Author: ${options.author || config.wechat.defaultAuthor || ''}`);
+
+    // Initialize WeChat API
+    logger.debug('Initializing WeChat API...');
+    const wechatApi = new WeChatApi(config.wechat);
+
+    // Upload cover image - WeChat API requires thumb_media_id for draft creation
+    let thumbMediaId: string;
+    if (options.cover) {
+      logger.info(`Uploading cover image: ${options.cover}`);
+      try {
+        thumbMediaId = await wechatApi.uploadThumb(options.cover);
+        logger.success('Cover image uploaded');
+      } catch (error) {
+        logger.warning(`Failed to upload cover image: ${(error as Error).message}`);
+        // Fallback to default cover
+        logger.info('Using default cover image');
+        const defaultCoverPath = join(process.cwd(), 'default-cover.png');
+        thumbMediaId = await wechatApi.uploadThumb(defaultCoverPath);
+      }
+    } else {
+      logger.debug('Using default cover image');
+      const defaultCoverPath = join(process.cwd(), 'default-cover.png');
+      thumbMediaId = await wechatApi.uploadThumb(defaultCoverPath);
+    }
+
+    // Handle images in HTML
+    logger.debug('Processing images...');
+    const imageHandler = new ImageHandler({
+      wechatApi,
+      baseDir: process.cwd()
+    });
+    const processedHtml = await imageHandler.processImages(html);
+
+    // Create article data (remove undefined fields)
+    const articleData: Record<string, unknown> = {
+      title: options.title,
+      author: options.author || config.wechat.defaultAuthor || '',
+      content: processedHtml,
+      thumbMediaId,  // WeChat API requires this for draft creation
+      needOpenComment: 0,
+      onlyFansCanComment: 0
+    };
+
+    // Only add digest if provided
+    if (options.digest) {
+      articleData.digest = options.digest;
+    }
+
+    // Sync to WeChat
+    if (options.update) {
+      logger.info(`Updating draft: ${options.update}`);
+      await wechatApi.updateDraft(options.update, options.index || 0, articleData as unknown as ArticleData);
+      logger.success('Draft updated successfully');
+    } else {
+      logger.info('Creating new draft...');
+      const result = await wechatApi.createDraft([articleData as unknown as ArticleData]);
+      logger.success(`Draft created successfully! Media ID: ${result.mediaId}`);
+    }
+  } catch (error) {
+    logger.error((error as Error).message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Create sync-html command
+ */
+export default new Command()
+  .name('sync-html')
+  .description('Sync HTML file to WeChat Official Account draft')
+  .argument('<input>', 'Input HTML file path')
+  .option('-t, --title <title>', 'Article title (required)')
+  .option('-a, --author <author>', 'Author name')
+  .option('-d, --digest <digest>', 'Article summary/digest')
+  .option('--cover <path>', 'Cover image path')
+  .option('-u, --update <media_id>', 'Update existing draft instead of creating new one')
+  .option('-i, --index <number>', 'Article index in draft (for update, default: 0)', '0')
+  .action(syncHtmlAction);

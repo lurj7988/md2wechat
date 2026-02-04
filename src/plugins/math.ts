@@ -1,9 +1,47 @@
+/**
+ * markdown-it plugin for KaTeX math formula support
+ */
+
 import katex from 'katex';
 
-// Test if potential opening or closing delimiter
-// Assumes that there is a "$" at state.src[pos]
-function isValidDelim(state, pos) {
-  let prevChar, nextChar;
+// Type definitions for markdown-it state
+interface State {
+  src: string;
+  pos: number;
+  posMax: number;
+  pending: string;
+  push: (type: string, tag: string, nesting: number) => Token;
+}
+
+interface BlockState extends State {
+  bMarks: number[];
+  tShift: number[];
+  eMarks: number[];
+  blkIndent: number;
+  line: number;
+  getLines: (start: number, end: number, indent: number, add: boolean) => string;
+}
+
+interface Token {
+  markup: string;
+  content: string;
+  block?: boolean;
+  map?: [number, number];
+}
+
+interface PluginOptions {
+  throwOnError?: boolean;
+  displayMode?: boolean;
+  [key: string]: unknown;
+}
+
+/**
+ * Test if potential opening or closing delimiter
+ * Assumes that there is a "$" at state.src[pos]
+ */
+function isValidDelim(state: State, pos: number): { can_open: boolean; can_close: boolean } {
+  let prevChar: number;
+  let nextChar: number;
   const max = state.posMax;
   let can_open = true;
   let can_close = true;
@@ -25,13 +63,20 @@ function isValidDelim(state, pos) {
   }
 
   return {
-    can_open: can_open,
-    can_close: can_close,
+    can_open,
+    can_close
   };
 }
 
-function math_inline(state, silent) {
-  let start, match, token, res, pos, escCount;
+/**
+ * Inline math rule for $...$ syntax
+ */
+function math_inline(state: State, silent: boolean): boolean {
+  let start: number;
+  let match: number;
+  let token: Token;
+  let res: { can_open: boolean; can_close: boolean };
+  let pos: number;
 
   if (state.src[state.pos] !== '$') {
     return false;
@@ -47,21 +92,17 @@ function math_inline(state, silent) {
   }
 
   // First check for and bypass all properly escaped delimiters
-  // This loop will assume that the first leading backtick can not
-  // be the first character in state.src, which is known since
-  // we have found an opening delimiter already.
   start = state.pos + 1;
   match = start;
   while ((match = state.src.indexOf('$', match)) !== -1) {
-    // Found potential $, look for escapes, pos will point to
-    // first non escape when complete
+    // Found potential $, look for escapes
     pos = match - 1;
     while (state.src[pos] === '\\') {
       pos -= 1;
     }
 
     // Even number of escapes, potential closing delimiter found
-    if ((match - pos) % 2 == 1) {
+    if ((match - pos) % 2 === 1) {
       break;
     }
     match += 1;
@@ -96,7 +137,7 @@ function math_inline(state, silent) {
   }
 
   if (!silent) {
-    token = state.push('math_inline', 'math', 0);
+    token = state.push('math_inline', 'math', 0) as Token;
     token.markup = '$';
     token.content = state.src.slice(start, match);
   }
@@ -105,8 +146,16 @@ function math_inline(state, silent) {
   return true;
 }
 
-function math_block(state, start, end, silent) {
-  let firstLine, lastLine, next, lastPos, found = false, token;
+/**
+ * Block math rule for $$...$$ syntax
+ */
+function math_block(state: BlockState, start: number, end: number, silent: boolean): boolean {
+  let firstLine: string;
+  let lastLine = '';
+  let next: number;
+  let lastPos: number;
+  let found = false;
+  let token: Token;
   let pos = state.bMarks[start] + state.tShift[start];
   const max = state.eMarks[start];
 
@@ -144,12 +193,7 @@ function math_block(state, start, end, silent) {
       break;
     }
 
-    if (
-      state.src
-        .slice(pos, maxNext)
-        .trim()
-        .slice(-2) === '$$'
-    ) {
+    if (state.src.slice(pos, maxNext).trim().slice(-2) === '$$') {
       lastPos = state.src.slice(0, maxNext).lastIndexOf('$$');
       lastLine = state.src.slice(pos, lastPos);
       found = true;
@@ -158,7 +202,7 @@ function math_block(state, start, end, silent) {
 
   state.line = next + 1;
 
-  token = state.push('math_block', 'math', 0);
+  token = state.push('math_block', 'math', 0) as Token;
   token.block = true;
   token.content =
     (firstLine && firstLine.trim() ? firstLine + '\n' : '') +
@@ -169,12 +213,15 @@ function math_block(state, start, end, silent) {
   return true;
 }
 
-export default function(md, options) {
+/**
+ * markdown-it plugin factory
+ */
+export default function (md: any, options: PluginOptions = {}): void {
   // Default options
   options = options || {};
 
   // set KaTeX as the renderer
-  const katexInline = function(latex) {
+  const katexInline = function (latex: string): string {
     options.displayMode = false;
     try {
       return katex.renderToString(latex, options);
@@ -186,11 +233,11 @@ export default function(md, options) {
     }
   };
 
-  const inlineRenderer = function(tokens, idx) {
+  const inlineRenderer = function (tokens: Token[], idx: number): string {
     return katexInline(tokens[idx].content);
   };
 
-  const katexBlock = function(latex) {
+  const katexBlock = function (latex: string): string {
     options.displayMode = true;
     try {
       return katex.renderToString(latex, options);
@@ -202,13 +249,13 @@ export default function(md, options) {
     }
   };
 
-  const blockRenderer = function(tokens, idx) {
+  const blockRenderer = function (tokens: Token[], idx: number): string {
     return katexBlock(tokens[idx].content) + '\n';
   };
 
   md.inline.ruler.after('escape', 'math_inline', math_inline);
   md.block.ruler.after('blockquote', 'math_block', math_block, {
-    alt: ['paragraph', 'reference', 'blockquote', 'list'],
+    alt: ['paragraph', 'reference', 'blockquote', 'list']
   });
   md.renderer.rules.math_inline = inlineRenderer;
   md.renderer.rules.math_block = blockRenderer;

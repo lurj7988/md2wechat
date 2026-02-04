@@ -1,4 +1,4 @@
-// 缩小highlight包大小，按需引入
+// 按需引入 highlight.js 语言包以减小包大小
 import hljs from 'highlight.js/lib/core';
 
 // 按需引入常用语言包

@@ -1,11 +1,33 @@
-function slugify(s, md) {
-  // Unicode-friendly
-  const spaceRegex = new RegExp(md.utils.lib.ucmicro.Z.source, 'g');
-  return encodeURIComponent(s.replace(spaceRegex, ''));
+/**
+ * markdown-it plugin for heading enhancement with spans and numbering
+ */
+
+interface Token {
+  type: string;
+  tag?: string;
+  content?: string;
+  children?: Token[];
 }
 
-function makeRule(md, options) {
-  return function addHeadingAnchors(state) {
+interface PluginOptions {
+  anchorClass?: string;
+  addHeadingSpan?: boolean;
+  slugify?: (s: string, md: any) => string;
+}
+
+/**
+ * Slugify function for creating URL-friendly IDs
+ */
+function slugify(s: string, _md: any): string {
+  // This is kept for reference but not used in the current implementation
+  return s;
+}
+
+/**
+ * Create heading span rule
+ */
+function makeRule(_md: any, options: PluginOptions) {
+  return function addHeadingAnchors(state: any): void {
     // h2 和 h3 编号计数器
     let h2Counter = 0;
     let h3Counter = 0;
@@ -17,8 +39,8 @@ function makeRule(md, options) {
         continue;
       }
 
-      const headingOpenToken = state.tokens[i];
-      const headingInlineToken = state.tokens[i + 1];
+      const headingOpenToken = state.tokens[i] as Token;
+      const headingInlineToken = state.tokens[i + 1] as Token;
 
       if (!headingInlineToken.content) {
         continue;
@@ -43,10 +65,11 @@ function makeRule(md, options) {
       if (options.addHeadingSpan) {
         const spanTokenPre = new state.Token('html_inline', '', 0);
         spanTokenPre.content = `${prefixContent}<span class="content">`;
-        headingInlineToken.children.unshift(spanTokenPre);
+        headingInlineToken.children!.unshift(spanTokenPre);
+
         const spanTokenPost = new state.Token('html_inline', '', 0);
         spanTokenPost.content = `</span><span class="suffix"></span>`;
-        headingInlineToken.children.push(spanTokenPost);
+        headingInlineToken.children!.push(spanTokenPost);
       }
 
       // Advance past the inline and heading_close tokens.
@@ -55,12 +78,15 @@ function makeRule(md, options) {
   };
 }
 
-export default function(md, opts) {
-  const defaults = {
+/**
+ * markdown-it plugin factory
+ */
+export default function (md: any, opts: PluginOptions = {}): void {
+  const defaults: PluginOptions = {
     anchorClass: 'markdown-it-headingspan',
     addHeadingSpan: true,
-    slugify: slugify,
+    slugify
   };
-  const options = md.utils.assign(defaults, opts);
+  const options = { ...defaults, ...opts };
   md.core.ruler.push('heading_span', makeRule(md, options));
 }

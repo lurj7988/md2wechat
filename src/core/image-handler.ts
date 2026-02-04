@@ -1,0 +1,132 @@
+/**
+ * Image handler module for processing and uploading images
+ */
+
+import { promises as fs } from 'fs';
+import { join } from 'path';
+import { WeChatApi } from './wechat-api.js';
+
+/**
+ * Image map type for local to WeChat URL mapping
+ */
+export interface ImageMap {
+  [localPath: string]: string;
+}
+
+/**
+ * Image handler options
+ */
+export interface ImageHandlerOptions {
+  baseDir?: string;
+  wechatApi: WeChatApi;
+}
+
+/**
+ * Image handler class for processing and uploading images
+ */
+export class ImageHandler {
+  private wechatApi: WeChatApi;
+  private baseDir: string;
+
+  constructor(options: ImageHandlerOptions) {
+    this.wechatApi = options.wechatApi;
+    this.baseDir = options.baseDir || process.cwd();
+  }
+
+  /**
+   * Extract local image paths from HTML
+   */
+  extractLocalImages(html: string): string[] {
+    const imgRegex = /<img[^>]+src="([^"]+)"[^>]*>/gi;
+    const images: string[] = [];
+    let match: RegExpExecArray | null;
+
+    while ((match = imgRegex.exec(html)) !== null) {
+      const src = match[1];
+      // 判断是否为本地路径
+      if (!src.startsWith('http://') && !src.startsWith('https://')) {
+        images.push(src);
+      }
+    }
+
+    return images;
+  }
+
+  /**
+   * Upload single image to WeChat server
+   */
+  async uploadToWechat(imagePath: string, type: 'image' | 'thumb' = 'image'): Promise<string> {
+    const fullPath = join(this.baseDir, imagePath);
+
+    // Check if file exists
+    try {
+      await fs.access(fullPath);
+    } catch {
+      console.warn(`Warning: Image file not found: ${imagePath}`);
+      return imagePath;
+    }
+
+    try {
+      if (type === 'thumb') {
+        return await this.wechatApi.uploadThumb(fullPath);
+      } else {
+        const result = await this.wechatApi.uploadImage(fullPath);
+        return result.url;
+      }
+    } catch (error) {
+      console.error(`Failed to upload image: ${imagePath}`, error);
+      return imagePath; // 失败时保留原路径
+    }
+  }
+
+  /**
+   * Upload multiple images to WeChat server
+   */
+  async uploadImages(images: string[], type: 'image' | 'thumb' = 'image'): Promise<ImageMap> {
+    const map: ImageMap = {};
+
+    for (const image of images) {
+      map[image] = await this.uploadToWechat(image, type);
+    }
+
+    return map;
+  }
+
+  /**
+   * Replace image URLs in HTML
+   */
+  replaceImageUrls(html: string, urlMap: ImageMap): string {
+    let result = html;
+
+    for (const [localPath, wechatUrl] of Object.entries(urlMap)) {
+      const escapedPath = localPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      result = result.replace(new RegExp(`src="${escapedPath}"`, 'gi'), `src="${wechatUrl}"`);
+    }
+
+    return result;
+  }
+
+  /**
+   * Process all images in HTML
+   */
+  async processImages(html: string, type: 'image' | 'thumb' = 'image'): Promise<string> {
+    const localImages = this.extractLocalImages(html);
+
+    if (localImages.length === 0) {
+      return html;
+    }
+
+    console.log(`Found ${localImages.length} local image(s), uploading...`);
+    const urlMap = await this.uploadImages(localImages, type);
+    return this.replaceImageUrls(html, urlMap);
+  }
+
+  /**
+   * Set base directory for resolving relative paths
+   */
+  setBaseDir(dir: string): void {
+    this.baseDir = dir;
+  }
+}
+
+export default ImageHandler;

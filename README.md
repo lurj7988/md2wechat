@@ -8,58 +8,152 @@
 - **代码高亮** - 支持 40+ 种编程语言的语法高亮
 - **数学公式** - 使用 KaTeX 渲染 LaTeX 公式
 - **多级引用** - 为不同层级的引用提供不同的样式
-- **主题系统** - 支持代码高亮主题切换
+- **主题系统** - 支持 Markdown 主题和代码高亮主题切换
 - **样式内联化** - 自动将 CSS 转换为内联样式，兼容微信公众号
+- **微信公众号同步** - 支持将 Markdown/HTML 直接同步到微信公众号草稿箱
+- **图片上传** - 自动上传本地图片到微信服务器
+- **TypeScript** - 完整的 TypeScript 类型支持
 
 ## 安装
 
+### 全局安装（推荐）
+
 ```bash
+npm install -g md2wechat
+```
+
+### 本地开发
+
+```bash
+# 克隆项目
+git clone <repository_url>
 cd wechat
+
+# 安装依赖
 npm install
+
+# 构建
+npm run build
+
+# 链接到全局（开发测试用）
+npm link
 ```
 
 ## 使用方式
 
-### 基本用法
+### 1. Markdown 转 HTML
 
 ```bash
-# 将 Markdown 转换为 HTML
-node bin/md2wechat.js input.md output.html
+# 基本用法
+md2wechat convert input.md output.html
 
-# 或者使用 npx
-npx md2wechat input.md output.html
+# 指定主题
+md2wechat convert input.md output.html --code-theme github
+
+# 输出到标准输出
+md2wechat convert input.md --stdout > output.html
 ```
 
-### 指定主题
+### 2. Markdown 同步到微信公众号
 
 ```bash
-# 使用 GitHub 代码主题
-node bin/md2wechat.js input.md output.html --code-theme github
+# 基本用法（标题和作者从配置文件读取）
+md2wechat sync-md article.md
 
-# 使用 Atom One Dark 代码主题（默认）
-node bin/md2wechat.js input.md output.html --code-theme atom-one-dark
+# 指定标题和作者
+md2wechat sync-md article.md --title "文章标题" --author "作者名"
+
+# 指定封面图
+md2wechat sync-md article.md --cover cover.jpg
+
+# 更新现有草稿
+md2wechat sync-md article.md --update <media_id>
 ```
 
-### 从标准输入读取
+### 3. HTML 同步到微信公众号
 
 ```bash
-cat input.md | node bin/md2wechat.js > output.html
+# 基本用法（需要指定标题）
+md2wechat sync-html article.html --title "文章标题"
+
+# 完整参数
+md2wechat sync-html article.html --title "文章标题" --author "作者名" --digest "摘要" --cover cover.jpg
 ```
 
-### 帮助信息
+## 配置
+
+### 环境变量配置
+
+创建 `.env` 文件（参考 `.env.example`）：
 
 ```bash
-node bin/md2wechat.js --help
+# 微信公众号配置
+WECHAT_APP_ID=your_app_id
+WECHAT_APP_SECRET=your_app_secret
+WECHAT_DEFAULT_AUTHOR=Your Name
+
+# 主题配置
+THEME=default
+CODE_THEME=atom-one-dark
+```
+
+### 配置文件
+
+创建 `md2wechat.config.json`：
+
+```json
+{
+  "wechat": {
+    "appId": "your_app_id",
+    "appSecret": "your_app_secret",
+    "defaultAuthor": "Your Name"
+  },
+  "theme": {
+    "name": "default",
+    "codeTheme": "atom-one-dark"
+  }
+}
 ```
 
 ## 命令行选项
+
+### convert 命令
 
 | 选项 | 简写 | 说明 | 默认值 |
 |------|------|------|--------|
 | `--theme` | `-t` | Markdown 主题名称 | `default` |
 | `--code-theme` | `-c` | 代码高亮主题名称 | `atom-one-dark` |
-| `--help` | `-h` | 显示帮助信息 | - |
-| `--version` | `-v` | 显示版本号 | - |
+| `--stdout` | - | 输出到标准输出 | - |
+
+### sync-md 命令
+
+| 选项 | 简写 | 说明 | 默认值 |
+|------|------|------|--------|
+| `--title` | `-t` | 文章标题 | 自动提取 |
+| `--author` | `-a` | 作者名称 | 从配置读取 |
+| `--digest` | `-d` | 文章摘要 | 自动提取 |
+| `--cover` | - | 封面图片路径 | - |
+| `--update` | `-u` | 更新现有草稿（media_id） | - |
+| `--index` | `-i` | 文章索引（用于更新） | `0` |
+
+### sync-html 命令
+
+| 选项 | 简写 | 说明 | 默认值 |
+|------|------|------|--------|
+| `--title` | `-t` | 文章标题（必需） | - |
+| `--author` | `-a` | 作者名称 | 从配置读取 |
+| `--digest` | `-d` | 文章摘要 | - |
+| `--cover` | - | 封面图片路径 | - |
+| `--update` | `-u` | 更新现有草稿（media_id） | - |
+| `--index` | `-i` | 文章索引（用于更新） | `0` |
+
+### 通用选项
+
+| 选项 | 简写 | 说明 |
+|------|------|------|
+| `--help` | `-h` | 显示帮助信息 |
+| `--version` | `-v` | 显示版本号 |
+| `--debug` | - | 启用调试模式 |
 
 ## 代码主题
 
@@ -123,28 +217,70 @@ $$
 
 ## 输出使用
 
-1. 运行转换命令生成 HTML 文件
+### 方式一：复制粘贴
+
+1. 运行 `md2wechat convert` 生成 HTML 文件
 2. 打开生成的 HTML 文件
 3. 全选复制内容（Ctrl+A, Ctrl+C）
 4. 粘贴到微信公众号编辑器（Ctrl+V）
+
+### 方式二：API 同步
+
+1. 配置微信公众号 API 凭证
+2. 运行 `md2wechat sync-md` 或 `md2wechat sync-html`
+3. 文章自动同步到草稿箱
+4. 在微信公众号后台打开草稿进行编辑
 
 ## 项目结构
 
 ```
 wechat/
-├── bin/
-│   └── md2wechat.js      # CLI 入口文件
-├── lib/
-│   ├── parser.js         # Markdown 解析器
-│   ├── converter.js      # HTML 转换器
-│   ├── plugins/          # markdown-it 插件
-│   └── highlight/        # 代码高亮配置
-├── themes/               # 样式主题
-│   ├── basic.css         # 基础样式
-│   ├── markdown/         # Markdown 主题
-│   └── code/             # 代码高亮主题
+├── src/                      # 源代码目录
+│   ├── cli/                  # CLI 命令行工具
+│   │   ├── index.ts          # CLI 入口
+│   │   ├── commands/         # 子命令
+│   │   └── utils/            # 工具函数
+│   ├── core/                 # 核心功能模块
+│   │   ├── parser.ts         # Markdown 解析器
+│   │   ├── converter.ts      # HTML 转换器
+│   │   ├── wechat-api.ts     # 微信公众号 API
+│   │   └── image-handler.ts  # 图片处理
+│   ├── plugins/              # markdown-it 插件
+│   ├── highlight/            # 代码高亮配置
+│   ├── types/                # 类型定义
+│   └── index.ts              # 库入口
+├── themes/                   # 样式主题
+│   ├── basic.css             # 基础样式
+│   ├── markdown/             # Markdown 主题
+│   └── code/                 # 代码高亮主题
+├── bin/                      # 命令行入口
+│   └── md2wechat             # Bash 入口脚本
+├── dist/                     # 编译输出目录
 ├── package.json
+├── tsconfig.json
 └── README.md
+```
+
+## 开发
+
+```bash
+# 安装依赖
+npm install
+
+# 监听模式编译
+npm run watch
+
+# 开发模式运行
+npm run dev -- convert input.md
+
+# 构建
+npm run build
+
+# 测试
+npm test
+
+# 代码检查
+npm run lint
 ```
 
 ## 依赖
@@ -153,6 +289,8 @@ wechat/
 - [highlight.js](https://highlightjs.org/) - 代码语法高亮
 - [katex](https://katex.org/) - 数学公式渲染
 - [juice](https://github.com/Automattic/juice) - CSS 内联化
+- [commander](https://github.com/tj/commander.js) - CLI 框架
+- [chalk](https://github.com/chalk/chalk) - 终端样式
 
 ## 参考项目
 

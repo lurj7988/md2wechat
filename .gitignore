@@ -28,3 +28,17 @@ package-lock.json
 
 # claude temp files
 tmpclaude-*-cwd
+claude-*.txt
+
+# typescript
+*.tsbuildinfo
+
+# environment
+.env
+
+# publish
+*.tgz
+
+# ide
+.vscode/
+.idea/

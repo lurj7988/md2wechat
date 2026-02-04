@@ -1,0 +1,49 @@
+# Source files
+src/
+lib/
+*.ts
+*.map
+
+# Config files
+tsconfig.json
+.eslintrc.json
+.prettierrc.json
+.jest.config.json
+.npmrc
+
+# Environment
+.env
+.env.example
+
+# Tests
+test/
+tests/
+*.test.ts
+*.spec.ts
+coverage/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Documentation (keep README and LICENSE)
+*.md
+!README.md
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Build artifacts
+*.tsbuildinfo
+
+# Claude temp files
+tmpclaude-*-cwd
+claude-*.txt
+
+# Misc
+.DS_Store
