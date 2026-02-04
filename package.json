@@ -21,7 +21,8 @@
   "files": [
     "dist",
     "themes",
-    "bin"
+    "bin",
+    "assets"
   ],
   "scripts": {
     "build": "tsc",

@@ -7,9 +7,19 @@ import { WeChatApi } from '../../core/wechat-api.js';
 import { ImageHandler } from '../../core/image-handler.js';
 import type { ArticleData } from '../../types/index.js';
 import { readFile, fileExists } from '../utils/helpers.js';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { loadConfig } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
+
+/**
+ * Get the assets directory path
+ */
+function getAssetsPath(): string {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  return join(__dirname, '../../../assets');
+}
 
 /**
  * Sync-html command implementation
@@ -66,7 +76,7 @@ async function syncHtmlAction(
         logger.warning(`Failed to upload cover image: ${(error as Error).message}`);
         // Fallback to default cover
         logger.info('Using default cover image');
-        const defaultCoverPath = join(process.cwd(), 'default-cover.png');
+        const defaultCoverPath = join(getAssetsPath(), 'default-cover.png');
         thumbMediaId = await wechatApi.uploadThumb(defaultCoverPath);
       }
     } else {
