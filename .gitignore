@@ -39,6 +39,9 @@ claude-*.txt
 # publish
 *.tgz
 
+# test files
+test-files/
+
 # ide
 .vscode/
 .idea/
