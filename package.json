@@ -6,7 +6,7 @@
   "types": "./dist/index.d.ts",
   "type": "module",
   "bin": {
-    "md2wechat": "./bin/md2wechat"
+    "md2wechat": "./dist/cli/index.js"
   },
   "exports": {
     ".": {
@@ -21,7 +21,6 @@
   "files": [
     "dist",
     "themes",
-    "bin",
     "assets"
   ],
   "scripts": {
