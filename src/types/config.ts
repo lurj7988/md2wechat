@@ -50,11 +50,3 @@ export interface Config {
   wechat: WeChatConfig;
   theme: ThemeConfig;
 }
-
-/**
- * Config file interface
- */
-export interface ConfigFile {
-  wechat?: WeChatConfig;
-  theme?: Partial<ThemeConfig>;
-}

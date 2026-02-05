@@ -97,23 +97,15 @@ THEME=default
 CODE_THEME=atom-one-dark
 ```
 
-### 配置文件
+### 配置说明
 
-创建 `md2wechat.config.json`：
-
-```json
-{
-  "wechat": {
-    "appId": "your_app_id",
-    "appSecret": "your_app_secret",
-    "defaultAuthor": "Your Name"
-  },
-  "theme": {
-    "name": "default",
-    "codeTheme": "atom-one-dark"
-  }
-}
-```
+| 变量名 | 说明 | 必需 |
+|--------|------|------|
+| `WECHAT_APP_ID` | 微信公众号 AppID | 是（同步功能） |
+| `WECHAT_APP_SECRET` | 微信公众号 AppSecret | 是（同步功能） |
+| `WECHAT_DEFAULT_AUTHOR` | 默认作者名称 | 否 |
+| `THEME` | Markdown 主题名称 | 否 |
+| `CODE_THEME` | 代码高亮主题名称 | 否 |
 
 ## 命令行选项
 

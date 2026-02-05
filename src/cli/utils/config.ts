@@ -5,7 +5,7 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import dotenv from 'dotenv';
-import type { Config, ConfigFile, WeChatConfig, ThemeConfig } from '../../types/index';
+import type { Config, WeChatConfig, ThemeConfig } from '../../types/index';
 
 /**
  * Load environment variables from .env file
@@ -29,7 +29,7 @@ export async function getPackageVersion(): Promise<string> {
 }
 
 /**
- * Load WeChat configuration from environment variables or config file
+ * Load WeChat configuration from environment variables
  */
 export function loadWeChatConfig(): WeChatConfig {
   const appId = process.env.WECHAT_APP_ID || process.env.WECHAT_APPID || '';
@@ -65,36 +65,11 @@ export function loadThemeConfig(): ThemeConfig {
 /**
  * Load full configuration
  */
-export async function loadConfig(configPath?: string): Promise<Config> {
+export async function loadConfig(): Promise<Config> {
   loadEnv();
 
-  let userConfig: ConfigFile = {};
-
-  if (configPath) {
-    try {
-      const content = await fs.readFile(configPath, 'utf-8');
-      userConfig = JSON.parse(content);
-    } catch (error) {
-      console.warn(`Warning: Could not load config file from ${configPath}`);
-    }
-  }
-
-  const wechat = userConfig.wechat || loadWeChatConfig();
-  const theme = { ...loadThemeConfig(), ...userConfig.theme };
-
-  return { wechat, theme };
-}
-
-/**
- * Get config file path
- */
-export function getConfigPath(): string {
-  const customPath = process.env.MD2WECHAT_CONFIG;
-  if (customPath) {
-    return customPath;
-  }
-
-  // Check for config in current directory
-  const cwd = process.cwd();
-  return join(cwd, 'md2wechat.config.json');
+  return {
+    wechat: loadWeChatConfig(),
+    theme: loadThemeConfig()
+  };
 }
