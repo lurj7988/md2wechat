@@ -57,19 +57,18 @@ export class Converter {
       join(this.themeBasePath, 'code', `${this.codeThemeName}.css`)
     ];
 
-    console.log('[DEBUG] themeBasePath:', this.themeBasePath);
-    console.log('[DEBUG] themeName:', this.themeName);
-    console.log('[DEBUG] codeThemeName:', this.codeThemeName);
+    logger.debug(`themeBasePath: ${this.themeBasePath}`);
+    logger.debug(`themeName: ${this.themeName}`);
+    logger.debug(`codeThemeName: ${this.codeThemeName}`);
 
     const cssArray = await Promise.all(
       paths.map(async (path) => {
         try {
           const css = await fs.readFile(path, 'utf-8');
-          console.log('[DEBUG] Loaded:', path);
+          logger.debug(`Loaded: ${path}`);
           return css;
         } catch (error) {
           logger.debug(`Theme file not found: ${path} - ${(error as Error).message}`);
-          console.log('[DEBUG] NOT FOUND:', path);
           return '';
         }
       })

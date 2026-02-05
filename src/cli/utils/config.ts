@@ -6,6 +6,7 @@ import { promises as fs } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { logger } from './logger.js';
 import type { Config, WeChatConfig, ThemeConfig } from '../../types/index';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,12 +18,12 @@ const __dirname = dirname(__filename);
 export function loadEnv(): void {
   const result = dotenv.config();
   if (result.error) {
-    console.error('[DEBUG] .env load error:', result.error.message);
+    logger.debug(`.env load error: ${result.error.message}`);
   } else {
-    console.log('[DEBUG] .env loaded from:', result.parsed ? 'success' : 'no file');
+    logger.debug(`.env loaded: ${result.parsed ? 'success' : 'no file'}`);
   }
-  console.log('[DEBUG] THEME =', process.env.THEME);
-  console.log('[DEBUG] CODE_THEME =', process.env.CODE_THEME);
+  logger.debug(`THEME = ${process.env.THEME}`);
+  logger.debug(`CODE_THEME = ${process.env.CODE_THEME}`);
 }
 
 /**
