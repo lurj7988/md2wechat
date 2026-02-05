@@ -3,15 +3,26 @@
  */
 
 import { promises as fs } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import type { Config, WeChatConfig, ThemeConfig } from '../../types/index';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
  * Load environment variables from .env file
  */
 export function loadEnv(): void {
-  dotenv.config();
+  const result = dotenv.config();
+  if (result.error) {
+    console.error('[DEBUG] .env load error:', result.error.message);
+  } else {
+    console.log('[DEBUG] .env loaded from:', result.parsed ? 'success' : 'no file');
+  }
+  console.log('[DEBUG] THEME =', process.env.THEME);
+  console.log('[DEBUG] CODE_THEME =', process.env.CODE_THEME);
 }
 
 /**
@@ -19,7 +30,8 @@ export function loadEnv(): void {
  */
 export async function getPackageVersion(): Promise<string> {
   try {
-    const packagePath = join(process.cwd(), 'package.json');
+    // Traverse up from dist/cli/utils/config.ts to project root
+    const packagePath = join(__dirname, '../../../package.json');
     const content = await fs.readFile(packagePath, 'utf-8');
     const pkg = JSON.parse(content);
     return pkg.version || '2.0.0';
