@@ -5,7 +5,11 @@
 import juice from 'juice';
 import { promises as fs } from 'fs';
 import { resolve, join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { logger } from '../cli/utils/logger';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
  * Converter options
@@ -39,7 +43,8 @@ export class Converter {
   constructor(options: ConverterOptions = {}) {
     this.themeName = options.theme || 'default';
     this.codeThemeName = options.codeTheme || 'atom-one-dark';
-    this.themeBasePath = options.themeBasePath || resolve(process.cwd(), 'themes');
+    // Use package installation directory instead of current working directory
+    this.themeBasePath = options.themeBasePath || resolve(__dirname, '../../themes');
   }
 
   /**
@@ -52,12 +57,19 @@ export class Converter {
       join(this.themeBasePath, 'code', `${this.codeThemeName}.css`)
     ];
 
+    console.log('[DEBUG] themeBasePath:', this.themeBasePath);
+    console.log('[DEBUG] themeName:', this.themeName);
+    console.log('[DEBUG] codeThemeName:', this.codeThemeName);
+
     const cssArray = await Promise.all(
       paths.map(async (path) => {
         try {
-          return await fs.readFile(path, 'utf-8');
+          const css = await fs.readFile(path, 'utf-8');
+          console.log('[DEBUG] Loaded:', path);
+          return css;
         } catch (error) {
           logger.debug(`Theme file not found: ${path} - ${(error as Error).message}`);
+          console.log('[DEBUG] NOT FOUND:', path);
           return '';
         }
       })
