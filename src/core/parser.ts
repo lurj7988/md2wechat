@@ -34,12 +34,16 @@ export class Parser {
   private md: MarkdownIt;
 
   constructor(options: ParserOptions = {}) {
-    const { theme = 'default', macStyle = true, ...mdOptions } = options;
+    const { theme, macStyle = true, ...mdOptions } = options;
 
+    // breaks: true —— 软换行（单个 \n）渲染为 <br>，保留作者在引用块、
+    // 段落中刻意分行书写的内容，避免两行被合并成一行而显得拥挤难看。
+    // 放在 ...mdOptions 之前，调用方可通过传入 breaks: false 覆盖。
     this.md = new MarkdownIt({
       html: true,
       linkify: true,
       typographer: true,
+      breaks: true,
       highlight: this.createHighlighter(macStyle),
       ...mdOptions
     });
