@@ -40,14 +40,12 @@ interface PluginOptions {
  * Assumes that there is a "$" at state.src[pos]
  */
 function isValidDelim(state: State, pos: number): { can_open: boolean; can_close: boolean } {
-  let prevChar: number;
-  let nextChar: number;
   const max = state.posMax;
   let can_open = true;
   let can_close = true;
 
-  prevChar = pos > 0 ? state.src.charCodeAt(pos - 1) : -1;
-  nextChar = pos + 1 <= max ? state.src.charCodeAt(pos + 1) : -1;
+  const prevChar = pos > 0 ? state.src.charCodeAt(pos - 1) : -1;
+  const nextChar = pos + 1 <= max ? state.src.charCodeAt(pos + 1) : -1;
 
   // Check non-whitespace conditions for opening and closing, and
   // check that closing delimiter isn't followed by a number
@@ -72,7 +70,6 @@ function isValidDelim(state: State, pos: number): { can_open: boolean; can_close
  * Inline math rule for $...$ syntax
  */
 function math_inline(state: State, silent: boolean): boolean {
-  let start: number;
   let match: number;
   let token: Token;
   let res: { can_open: boolean; can_close: boolean };
@@ -92,7 +89,7 @@ function math_inline(state: State, silent: boolean): boolean {
   }
 
   // First check for and bypass all properly escaped delimiters
-  start = state.pos + 1;
+  const start = state.pos + 1;
   match = start;
   while ((match = state.src.indexOf('$', match)) !== -1) {
     // Found potential $, look for escapes
@@ -155,7 +152,6 @@ function math_block(state: BlockState, start: number, end: number, silent: boole
   let next: number;
   let lastPos: number;
   let found = false;
-  let token: Token;
   let pos = state.bMarks[start] + state.tShift[start];
   const max = state.eMarks[start];
 
@@ -202,7 +198,7 @@ function math_block(state: BlockState, start: number, end: number, silent: boole
 
   state.line = next + 1;
 
-  token = state.push('math_block', 'math', 0) as Token;
+  const token = state.push('math_block', 'math', 0) as Token;
   token.block = true;
   token.content =
     (firstLine && firstLine.trim() ? firstLine + '\n' : '') +

@@ -15,6 +15,14 @@ jest.mock('juice', () => ({
   })
 }));
 
+// Mock paths module: paths.ts uses import.meta.url, which is a syntax error
+// in the CommonJS test runtime. Stub it out with a dummy __dirname. This is
+// safe because the juice mock above ignores the CSS content, so the resolved
+// themeBasePath never affects any assertion.
+jest.mock('../../src/core/paths', () => ({
+  __dirname: '/mock/test'
+}));
+
 describe('Converter', () => {
   const testDir = join(process.cwd(), 'test-temp-converter');
   let converter: Converter;

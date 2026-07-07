@@ -5,11 +5,8 @@
 import juice from 'juice';
 import { promises as fs } from 'fs';
 import { resolve, join, dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { logger } from '../cli/utils/logger';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { __dirname } from './paths';
 
 /**
  * Converter options
