@@ -31,7 +31,7 @@ async function syncHtmlAction(
     author?: string;
     digest?: string;
     cover?: string;
-    update?: string;
+    mediaId?: string;
     index?: number;
   }
 ): Promise<void> {
@@ -109,9 +109,9 @@ async function syncHtmlAction(
     }
 
     // Sync to WeChat
-    if (options.update) {
-      logger.info(`Updating draft: ${options.update}`);
-      await wechatApi.updateDraft(options.update, options.index || 0, articleData as unknown as ArticleData);
+    if (options.mediaId) {
+      logger.info(`Updating draft: ${options.mediaId}`);
+      await wechatApi.updateDraft(options.mediaId, options.index || 0, articleData as unknown as ArticleData);
       logger.success('Draft updated successfully');
     } else {
       logger.info('Creating new draft...');
@@ -135,6 +135,6 @@ export default new Command()
   .option('-a, --author <author>', 'Author name')
   .option('-d, --digest <digest>', 'Article summary/digest')
   .option('--cover <path>', 'Cover image path')
-  .option('-u, --update <media_id>', 'Update existing draft instead of creating new one')
-  .option('-i, --index <number>', 'Article index in draft (for update, default: 0)', '0')
+  .option('-u, --media-id <media_id>', 'Media ID of existing draft to update (instead of creating new)')
+  .option('-i, --index <number>', 'Article index in the draft (default: 0)', '0')
   .action(syncHtmlAction);

@@ -57,7 +57,7 @@ async function syncMdAction(
     author?: string;
     digest?: string;
     cover?: string;
-    update?: string;
+    mediaId?: string;
     index?: number;
   }
 ): Promise<void> {
@@ -153,10 +153,10 @@ async function syncMdAction(
     }
 
     // Sync to WeChat
-    if (options.update) {
-      logger.info(`Updating draft: ${options.update}`);
+    if (options.mediaId) {
+      logger.info(`Updating draft: ${options.mediaId}`);
       const index = parseInt((options.index || '0') as string, 10);
-      await wechatApi.updateDraft(options.update, isNaN(index) ? 0 : index, articleData as unknown as ArticleData);
+      await wechatApi.updateDraft(options.mediaId, isNaN(index) ? 0 : index, articleData as unknown as ArticleData);
       logger.success('Draft updated successfully');
     } else {
       logger.info('Creating new draft...');
@@ -180,6 +180,6 @@ export default new Command()
   .option('-a, --author <author>', 'Author name')
   .option('-d, --digest <digest>', 'Article summary/digest')
   .option('--cover <path>', 'Cover image path')
-  .option('-u, --update <media_id>', 'Update existing draft instead of creating new one')
-  .option('-i, --index <number>', 'Article index in draft (for update, default: 0)', '0')
+  .option('-u, --media-id <media_id>', 'Media ID of existing draft to update (instead of creating new)')
+  .option('-i, --index <number>', 'Article index in the draft (default: 0)', '0')
   .action(syncMdAction);

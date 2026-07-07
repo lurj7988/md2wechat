@@ -67,7 +67,7 @@ md2wechat sync-md article.md --title "文章标题" --author "作者名"
 md2wechat sync-md article.md --cover cover.jpg
 
 # 更新现有草稿
-md2wechat sync-md article.md --update <media_id>
+md2wechat sync-md article.md --media-id <media_id>
 ```
 
 ### 3. HTML 同步到微信公众号
@@ -125,7 +125,7 @@ CODE_THEME=atom-one-dark
 | `--author` | `-a` | 作者名称 | 从配置读取 |
 | `--digest` | `-d` | 文章摘要 | 自动提取 |
 | `--cover` | - | 封面图片路径 | - |
-| `--update` | `-u` | 更新现有草稿（media_id） | - |
+| `--media-id` | `-u` | 更新现有草稿（media_id） | - |
 | `--index` | `-i` | 文章索引（用于更新） | `0` |
 
 ### sync-html 命令
@@ -136,7 +136,7 @@ CODE_THEME=atom-one-dark
 | `--author` | `-a` | 作者名称 | 从配置读取 |
 | `--digest` | `-d` | 文章摘要 | - |
 | `--cover` | - | 封面图片路径 | - |
-| `--update` | `-u` | 更新现有草稿（media_id） | - |
+| `--media-id` | `-u` | 更新现有草稿（media_id） | - |
 | `--index` | `-i` | 文章索引（用于更新） | `0` |
 
 ### 通用选项
