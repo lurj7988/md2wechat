@@ -110,14 +110,14 @@
 #nice .multiquote-1 {
   display: block;
   font-size: 0.9em;
-  overflow: auto;
-  overflow-scrolling: touch;
-  border-left: 3px solid rgba(0, 0, 0, 0.4);
-  background: rgba(0, 0, 0, 0.05);
+  /* 不用半透明黑底色：微信深色模式会把它反色成黑底，显得很丑。
+     只保留左侧主题色色条，亮色在深/浅模式下都干净。 */
+  border-left: 4px solid #FF9500;
+  background: transparent;
   color: #6a737d;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 16px;
   padding-right: 10px;
   margin-bottom: 20px;
   margin-top: 20px;
@@ -192,12 +192,13 @@
 
 /*分隔线*/
 #nice hr {
-  height: 1px;
+  height: 0;
   margin: 0;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   border: none;
-  border-top: 1px solid black;
+  /* 不用纯黑：深色模式反成纯白也很突兀。改用浅灰，深浅模式下都柔和 */
+  border-top: 1px solid #e8e8e8;
 }
 
 /*代码块*/
@@ -362,32 +363,38 @@
 #nice table {
   display: table;
   text-align: left;
+  border-collapse: collapse;
+  width: 100%;
 }
 #nice tbody {
   border: 0;
 }
 
+/* 极简表格：去掉全网格边框，只用细横线分行，干净不厚重 */
 #nice table tr {
   border: 0;
-  border-top: 1px solid #ccc;
-  background-color: white;
-}
-
-#nice table tr:nth-child(2n) {
-  background-color: #F8F8F8;
+  background-color: transparent;
 }
 
 #nice table tr th,
 #nice table tr td {
   font-size: 16px;
-  border: 1px solid #ccc;
-  padding: 5px 10px;
+  border: none;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 10px 8px;
   text-align: left;
+}
+
+/* 末行去掉底边，避免表格底边多出一根线 */
+#nice table tr:last-child td {
+  border-bottom: none;
 }
 
 #nice table tr th {
   font-weight: bold;
-  background-color: #f0f0f0;
+  background-color: transparent;
+  border-bottom: 2px solid #FF9500;
+  padding-bottom: 8px;
 }
 
 /* 表格最小列宽4个汉字 */
