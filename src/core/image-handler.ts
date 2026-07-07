@@ -3,7 +3,9 @@
  */
 
 import { promises as fs } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
+import { tmpdir } from 'os';
+import { createHash } from 'crypto';
 import { WeChatApi } from './wechat-api';
 import { logger } from '../cli/utils/logger';
 
@@ -53,11 +55,33 @@ export class ImageHandler {
     return images;
   }
 
+  private isDataImage(src: string): boolean {
+    return /^data:image\/[a-zA-Z0-9.+-]+;base64,/.test(src);
+  }
+
+  private async materializeDataImage(src: string): Promise<string> {
+    const match = src.match(/^data:image\/([a-zA-Z0-9.+-]+);base64,(.+)$/);
+    if (!match) {
+      throw new Error('Invalid data image URI');
+    }
+
+    const extension = match[1].replace('jpeg', 'jpg').split('+')[0];
+    const content = Buffer.from(match[2], 'base64');
+    const hash = createHash('sha256').update(content).digest('hex').slice(0, 16);
+    const dir = join(tmpdir(), 'md2wechat-images');
+    const filePath = join(dir, `${hash}.${extension}`);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(filePath, content);
+    return filePath;
+  }
+
   /**
    * Upload single image to WeChat server
    */
   async uploadToWechat(imagePath: string, type: 'image' | 'thumb' = 'image'): Promise<string> {
-    const fullPath = join(this.baseDir, imagePath);
+    const fullPath = this.isDataImage(imagePath)
+      ? await this.materializeDataImage(imagePath)
+      : resolve(this.baseDir, imagePath);
 
     // Check if file exists
     try {

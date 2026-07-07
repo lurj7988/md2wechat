@@ -2,8 +2,6 @@
  * markdown-it plugin for KaTeX math formula support
  */
 
-import katex from 'katex';
-
 // Type definitions for markdown-it state
 interface State {
   src: string;
@@ -29,10 +27,12 @@ interface Token {
   map?: [number, number];
 }
 
-interface PluginOptions {
-  throwOnError?: boolean;
-  displayMode?: boolean;
-  [key: string]: unknown;
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 /**
@@ -212,41 +212,17 @@ function math_block(state: BlockState, start: number, end: number, silent: boole
 /**
  * markdown-it plugin factory
  */
-export default function (md: any, options: PluginOptions = {}): void {
-  // Default options
-  options = options || {};
-
-  // set KaTeX as the renderer
-  const katexInline = function (latex: string): string {
-    options.displayMode = false;
-    try {
-      return katex.renderToString(latex, options);
-    } catch (error) {
-      if (options.throwOnError) {
-        console.log(error);
-      }
-      return latex;
-    }
-  };
-
+export default function (md: any): void {
   const inlineRenderer = function (tokens: Token[], idx: number): string {
-    return katexInline(tokens[idx].content);
-  };
-
-  const katexBlock = function (latex: string): string {
-    options.displayMode = true;
-    try {
-      return katex.renderToString(latex, options);
-    } catch (error) {
-      if (options.throwOnError) {
-        console.log(error);
-      }
-      return latex;
-    }
+    const latex = tokens[idx].content;
+    const escaped = escapeHtml(latex);
+    return `<span class="math-image math-inline" data-latex="${escaped}" data-display="false">${escaped}</span>`;
   };
 
   const blockRenderer = function (tokens: Token[], idx: number): string {
-    return katexBlock(tokens[idx].content) + '\n';
+    const latex = tokens[idx].content.trim();
+    const escaped = escapeHtml(latex);
+    return `<span class="math-image math-display" data-latex="${escaped}" data-display="true">${escaped}</span>\n`;
   };
 
   md.inline.ruler.after('escape', 'math_inline', math_inline);

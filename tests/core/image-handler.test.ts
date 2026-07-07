@@ -88,6 +88,12 @@ describe('ImageHandler', () => {
       expect(images).toEqual(['local1.jpg', '../local2.png']);
     });
 
+    it('should extract data URI images for upload', () => {
+      const html = '<img src="data:image/png;base64,aGVsbG8=" />';
+      const images = imageHandler.extractLocalImages(html);
+      expect(images).toEqual(['data:image/png;base64,aGVsbG8=']);
+    });
+
     it('should handle HTML without images', () => {
       const html = '<p>No images here</p>';
       const images = imageHandler.extractLocalImages(html);
@@ -132,6 +138,18 @@ describe('ImageHandler', () => {
       const result = await imageHandler.uploadToWechat('thumb.jpg', 'thumb');
       expect(result).toBe('media_id_123');
       expect(mockWeChatApi.uploadThumb).toHaveBeenCalled();
+    });
+
+    it('should materialize and upload data URI images', async () => {
+      (mockWeChatApi.uploadImage as jest.Mock).mockResolvedValue({
+        url: 'https://mmbiz.qpic.cn/math.png'
+      });
+
+      const result = await imageHandler.uploadToWechat('data:image/png;base64,aGVsbG8=', 'image');
+      expect(result).toBe('https://mmbiz.qpic.cn/math.png');
+      const uploadedPath = (mockWeChatApi.uploadImage as jest.Mock).mock.calls[0][0] as string;
+      expect(uploadedPath).toContain('md2wechat-images');
+      expect(uploadedPath).toContain('.png');
     });
 
     it('should return original path if file not found', async () => {
@@ -208,6 +226,16 @@ describe('ImageHandler', () => {
       const html = '<img src="test.jpg" />';
       const result = await imageHandler.processImages(html);
       expect(result).toContain('https://mmbiz.qpic.cn/test.jpg');
+    });
+
+    it('should upload and replace data URI images in HTML', async () => {
+      (mockWeChatApi.uploadImage as jest.Mock).mockResolvedValue({
+        url: 'https://mmbiz.qpic.cn/math.png'
+      });
+
+      const html = '<img src="data:image/png;base64,aGVsbG8=" />';
+      const result = await imageHandler.processImages(html);
+      expect(result).toContain('src="https://mmbiz.qpic.cn/math.png"');
     });
 
     it('should return original HTML if no local images', async () => {

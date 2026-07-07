@@ -1,0 +1,84 @@
+/* Aurora code highlight theme */
+
+#nice .hljs {
+  color: #d9e8ea;
+  background: #12232e;
+}
+
+#nice .hljs-comment,
+#nice .hljs-quote {
+  color: #86a3a8;
+  font-style: italic;
+}
+
+#nice .hljs-keyword,
+#nice .hljs-selector-tag,
+#nice .hljs-subst {
+  color: #7dd3c7;
+}
+
+#nice .hljs-number,
+#nice .hljs-literal,
+#nice .hljs-variable,
+#nice .hljs-template-variable,
+#nice .hljs-tag .hljs-attr {
+  color: #f4a261;
+}
+
+#nice .hljs-string,
+#nice .hljs-doctag {
+  color: #ffd166;
+}
+
+#nice .hljs-title,
+#nice .hljs-section,
+#nice .hljs-selector-id {
+  color: #9dd9ff;
+  font-weight: 700;
+}
+
+#nice .hljs-type,
+#nice .hljs-class .hljs-title {
+  color: #b8e986;
+}
+
+#nice .hljs-tag,
+#nice .hljs-name,
+#nice .hljs-attribute {
+  color: #7dd3c7;
+}
+
+#nice .hljs-regexp,
+#nice .hljs-link {
+  color: #ffb4a2;
+}
+
+#nice .hljs-symbol,
+#nice .hljs-bullet {
+  color: #ffd166;
+}
+
+#nice .hljs-built_in,
+#nice .hljs-builtin-name {
+  color: #9dd9ff;
+}
+
+#nice .hljs-meta {
+  color: #b6c9ce;
+}
+
+#nice .hljs-deletion {
+  color: #ff8a8a;
+}
+
+#nice .hljs-addition {
+  color: #8bd8a8;
+}
+
+#nice .hljs-emphasis {
+  font-style: italic;
+}
+
+#nice .hljs-strong {
+  font-weight: 800;
+}

@@ -67,6 +67,8 @@ async function syncHtmlAction(
 
     // Upload cover image - WeChat API requires thumb_media_id for draft creation
     let thumbMediaId: string;
+    const defaultCoverPath = join(getAssetsPath(), 'default-cover.png');
+
     if (options.cover) {
       logger.info(`Uploading cover image: ${options.cover}`);
       try {
@@ -76,12 +78,10 @@ async function syncHtmlAction(
         logger.warning(`Failed to upload cover image: ${(error as Error).message}`);
         // Fallback to default cover
         logger.info('Using default cover image');
-        const defaultCoverPath = join(getAssetsPath(), 'default-cover.png');
         thumbMediaId = await wechatApi.uploadThumb(defaultCoverPath);
       }
     } else {
       logger.debug('Using default cover image');
-      const defaultCoverPath = join(process.cwd(), 'default-cover.png');
       thumbMediaId = await wechatApi.uploadThumb(defaultCoverPath);
     }
 
@@ -89,7 +89,7 @@ async function syncHtmlAction(
     logger.debug('Processing images...');
     const imageHandler = new ImageHandler({
       wechatApi,
-      baseDir: process.cwd()
+      baseDir: dirname(input)
     });
     const processedHtml = await imageHandler.processImages(html);
 

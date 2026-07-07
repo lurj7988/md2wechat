@@ -13,6 +13,7 @@ import multiquotePlugin from '../plugins/multiquote';
 import spanPlugin from '../plugins/span';
 import tableContainerPlugin from '../plugins/table-container';
 import liPlugin from '../plugins/li';
+import taskListPlugin from '../plugins/task-list';
 
 // Import third-party plugins
 import markdownItDeflist from 'markdown-it-deflist';
@@ -104,6 +105,7 @@ export class Parser {
     this.md.use(multiquotePlugin);
     this.md.use(spanPlugin);
     this.md.use(tableContainerPlugin);
+    this.md.use(taskListPlugin);
     this.md.use(liPlugin);
 
     // Register third-party plugins

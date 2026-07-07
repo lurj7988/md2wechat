@@ -20,7 +20,7 @@ jest.mock('juice', () => ({
 // safe because the juice mock above ignores the CSS content, so the resolved
 // themeBasePath never affects any assertion.
 jest.mock('../../src/core/paths', () => ({
-  __dirname: '/mock/test'
+  __dirname: `${process.cwd()}/src/core`
 }));
 
 describe('Converter', () => {
@@ -86,6 +86,14 @@ describe('Converter', () => {
       const result = await converter.convert(html);
       expect(result).toContain('<!-- CSS inlined -->');
       expect(result).toContain('<p>Test content</p>');
+    });
+
+    it('should render math placeholders to PNG images', async () => {
+      const html = '<span class="math-image math-inline" data-latex="E=mc^2" data-display="false">E=mc^2</span>';
+      const result = await converter.convert(html);
+      expect(result).toContain('data:image/png;base64,');
+      expect(result).toContain('math-inline-rendered');
+      expect(result).not.toContain('math-image math-inline');
     });
 
     it('should handle empty HTML', async () => {

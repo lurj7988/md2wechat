@@ -7,6 +7,7 @@ import { promises as fs } from 'fs';
 import { resolve, join, dirname } from 'path';
 import { logger } from '../cli/utils/logger';
 import { __dirname } from './paths';
+import { renderMathImages } from './math-renderer';
 
 /**
  * Converter options
@@ -77,6 +78,7 @@ export class Converter {
    * Convert HTML to WeChat compatible format with inlined CSS
    */
   async convert(html: string): Promise<string> {
+    const mathRendered = await renderMathImages(html);
     const css = await this.loadCSS();
 
     const juiceOptions: JuiceOptions = {
@@ -88,7 +90,7 @@ export class Converter {
       extraCss: ''
     };
 
-    const result = juice.inlineContent(html, css, juiceOptions);
+    const result = juice.inlineContent(mathRendered, css, juiceOptions);
     return result;
   }
 
@@ -103,8 +105,9 @@ export class Converter {
    * Process HTML with conversion and wrapping
    */
   async process(html: string): Promise<string> {
+    const mathRendered = await renderMathImages(html);
     // 先包装 #nice 容器，因为 CSS 选择器依赖它
-    const wrapped = this.wrapContent(html);
+    const wrapped = this.wrapContent(mathRendered);
     // 然后内联 CSS
     const css = await this.loadCSS();
     const juiceOptions: JuiceOptions = {

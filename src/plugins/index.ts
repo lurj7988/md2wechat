@@ -6,4 +6,5 @@ export { default as math } from './math.js';
 export { default as multiquote } from './multiquote.js';
 export { default as span } from './span.js';
 export { default as tableContainer } from './table-container.js';
+export { default as taskList } from './task-list.js';
 export { default as li } from './li.js';

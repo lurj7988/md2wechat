@@ -84,11 +84,25 @@ describe('Parser', () => {
     it('should parse markdown with lists', () => {
       const markdown = '- Item 1\n- Item 2\n- Item 3';
       const html = parser.parse(markdown);
-      expect(html).toContain('<ul>');
-      expect(html).toContain('<li>');
+      expect(html).toContain('md-list md-list-unordered');
+      expect(html).toContain('md-list-marker-unordered');
+      expect(html).not.toContain('<ul>');
+      expect(html).not.toContain('<li>');
       expect(html).toContain('Item 1');
       expect(html).toContain('Item 2');
       expect(html).toContain('Item 3');
+    });
+
+    it('should parse task lists as checked and unchecked markers', () => {
+      const markdown = '- [x] Done\n- [ ] Todo';
+      const html = parser.parse(markdown);
+      expect(html).toContain('task-list-item-checked');
+      expect(html).toContain('task-list-item-unchecked');
+      expect(html).toContain('task-list-marker checked');
+      expect(html).toContain('task-list-marker unchecked');
+      expect(html).toContain('✓');
+      expect(html).not.toContain('[x]');
+      expect(html).not.toContain('[ ]');
     });
 
     it('should parse markdown with blockquotes', () => {
@@ -125,15 +139,16 @@ describe('Parser', () => {
     it('should parse markdown with math (inline)', () => {
       const markdown = 'This is $E=mc^2$ formula';
       const html = parser.parse(markdown);
-      expect(html).toContain('katex');
-      expect(html).toContain('E=mc^2');
+      expect(html).toContain('math-image math-inline');
+      expect(html).toContain('data-latex="E=mc^2"');
+      expect(html).toContain('data-display="false"');
     });
 
     it('should parse markdown with math (block)', () => {
       const markdown = '$$\\sum_{i=1}^{n} x_i$$';
       const html = parser.parse(markdown);
-      expect(html).toContain('katex');
-      expect(html).toContain('display');
+      expect(html).toContain('math-image math-display');
+      expect(html).toContain('data-display="true"');
     });
 
     it('should escape HTML by default', () => {

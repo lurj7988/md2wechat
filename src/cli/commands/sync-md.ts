@@ -59,6 +59,8 @@ async function syncMdAction(
     cover?: string;
     mediaId?: string;
     index?: number;
+    theme?: string;
+    codeTheme?: string;
   }
 ): Promise<void> {
   try {
@@ -94,9 +96,12 @@ async function syncMdAction(
 
     // Convert to WeChat format
     logger.debug('Converting to WeChat format...');
+    const themeName = options.theme || config.theme.name;
+    const codeTheme = options.codeTheme || config.theme.codeTheme;
+    logger.info(`Theme: ${themeName} (code: ${codeTheme})`);
     const converter = new Converter({
-      theme: config.theme.name,
-      codeTheme: config.theme.codeTheme
+      theme: themeName,
+      codeTheme
     });
     const wechatHtml = await converter.process(html);
 
@@ -180,6 +185,8 @@ export default new Command()
   .option('-a, --author <author>', 'Author name')
   .option('-d, --digest <digest>', 'Article summary/digest')
   .option('--cover <path>', 'Cover image path')
+  .option('--theme <name>', 'Markdown theme (overrides config, e.g. default, aurora)')
+  .option('--code-theme <name>', 'Code highlight theme (overrides config, e.g. atom-one-dark, aurora, github)')
   .option('-u, --media-id <media_id>', 'Media ID of existing draft to update (instead of creating new)')
   .option('-i, --index <number>', 'Article index in the draft (default: 0)', '0')
   .action(syncMdAction);

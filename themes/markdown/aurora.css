@@ -1,0 +1,572 @@
+/* Aurora editorial theme for md2wechat */
+
+#nice {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 18px;
+  color: #1f2933;
+  background: #fbfcfb;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.82;
+}
+
+#nice p {
+  margin: 0 0 16px;
+  padding: 0;
+  color: #2c3642;
+  font-size: 16px;
+  line-height: 1.82;
+}
+
+#nice h1,
+#nice h2,
+#nice h3,
+#nice h4,
+#nice h5,
+#nice h6 {
+  color: #14213d;
+  font-weight: 760;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+#nice h1 {
+  margin: 8px 0 28px;
+  padding: 22px 0 20px;
+  border-top: 5px solid #2a9d8f;
+  border-bottom: 1px solid #dbe7e3;
+  font-size: 30px;
+}
+
+#nice h2 {
+  display: block;
+  margin: 42px 0 20px;
+  padding: 0 0 10px 16px;
+  border-left: 5px solid #2a9d8f;
+  border-bottom: 1px solid #d8e7e2;
+  color: #123c4a;
+  font-size: 24px;
+}
+
+#nice h3 {
+  margin: 32px 0 14px;
+  color: #264653;
+  font-size: 20px;
+}
+
+#nice h4 {
+  margin: 26px 0 12px;
+  color: #315a67;
+  font-size: 18px;
+}
+
+#nice h5,
+#nice h6 {
+  margin: 22px 0 10px;
+  color: #50616d;
+  font-size: 16px;
+}
+
+#nice h2 .prefix,
+#nice h3 .prefix {
+  display: inline;
+  color: #2a9d8f;
+  font-weight: 800;
+}
+
+#nice h3 .prefix-square {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #e9c46a;
+  vertical-align: 2px;
+}
+
+#nice h1 .suffix,
+#nice h2 .suffix,
+#nice h3 .suffix,
+#nice h4 .suffix,
+#nice h5 .suffix,
+#nice h6 .suffix {
+  display: none;
+}
+
+#nice a {
+  color: #0f766e;
+  border-bottom: 1px solid rgba(15, 118, 110, 0.32);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+#nice strong {
+  color: #102a43;
+  font-weight: 800;
+}
+
+#nice em {
+  color: #5f4b8b;
+  font-style: italic;
+}
+
+#nice del {
+  color: #7c8792;
+  text-decoration-color: #f4a261;
+}
+
+#nice mark {
+  padding: 2px 5px;
+  border-radius: 5px;
+  color: #402b00;
+  background: #fff2b8;
+}
+
+#nice kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 1px solid #c8d6d2;
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #31515c;
+  font-family: Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+#nice hr {
+  height: 1px;
+  margin: 34px 0;
+  border: 0;
+  background: #dbe7e3;
+}
+
+#nice ul,
+#nice ol {
+  margin: 8px 0 18px;
+  padding-left: 24px;
+  color: #2c3642;
+}
+
+#nice ul {
+  list-style-type: disc;
+}
+
+#nice ul ul {
+  list-style-type: circle;
+}
+
+#nice ol {
+  list-style-type: decimal;
+}
+
+#nice li {
+  margin: 6px 0;
+}
+
+#nice li section {
+  margin: 0;
+  color: #2c3642;
+  font-weight: 400;
+  line-height: 1.72;
+}
+
+#nice .md-list {
+  display: block;
+  margin: 10px 0 18px;
+}
+
+#nice .md-list .md-list {
+  margin: 8px 0 6px 30px;
+}
+
+#nice .md-list-item {
+  display: block;
+  margin: 8px 0;
+  padding-left: 34px;
+  color: #2c3642;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+#nice .md-list-marker {
+  display: inline-block;
+  width: 24px;
+  min-width: 24px;
+  margin-left: -34px;
+  margin-right: 10px;
+  padding-right: 0;
+  color: #2a9d8f;
+  font-weight: 800;
+  line-height: 28px;
+  text-align: center;
+  vertical-align: top;
+}
+
+#nice .md-list-marker-unordered {
+  width: 24px;
+  min-width: 24px;
+  color: #e9c46a;
+  text-align: center;
+}
+
+#nice .md-list-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e9c46a;
+  color: transparent;
+  font-size: 1px;
+  line-height: 6px;
+  vertical-align: middle;
+}
+
+#nice .md-list-marker-ordered {
+  width: 28px;
+  min-width: 28px;
+  margin-right: 6px;
+  text-align: right;
+}
+
+#nice .md-list-marker-task {
+  width: 24px;
+  min-width: 24px;
+  margin-left: -34px;
+  margin-right: 10px;
+  padding-right: 0;
+  text-align: center;
+  line-height: 28px;
+}
+
+#nice .task-list-item {
+  list-style-type: none;
+}
+
+#nice .task-list-marker {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  padding-right: 0;
+  border: 2px solid #a7c8c0;
+  border-radius: 5px;
+  color: #ffffff;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 14px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#nice .task-list-marker.checked {
+  border-color: #2a9d8f;
+  background: #2a9d8f;
+}
+
+#nice .task-list-marker.unchecked {
+  border-color: #a7c8c0;
+  color: transparent;
+  background: #f7fbfa;
+  font-size: 0;
+  line-height: 14px;
+}
+
+#nice blockquote,
+#nice .multiquote-1,
+#nice .multiquote-2,
+#nice .multiquote-3 {
+  margin: 22px 0;
+  padding: 16px 18px;
+  border: 0;
+  border-left: 5px solid #2a9d8f;
+  border-radius: 0 8px 8px 0;
+  background: #eef8f5;
+  box-shadow: none;
+  color: #32535e;
+}
+
+#nice .multiquote-2 {
+  border-left-color: #e9c46a;
+  background: #fff9e8;
+}
+
+#nice .multiquote-3 {
+  border-left-color: #f4a261;
+  background: #fff3eb;
+}
+
+#nice blockquote p,
+#nice .multiquote-1 p,
+#nice .multiquote-2 p,
+#nice .multiquote-3 p {
+  margin: 0 0 10px;
+  color: #32535e;
+  text-align: left;
+}
+
+#nice blockquote p:last-child,
+#nice .multiquote-1 p:last-child,
+#nice .multiquote-2 p:last-child,
+#nice .multiquote-3 p:last-child {
+  margin-bottom: 0;
+}
+
+#nice .table-of-contents {
+  margin: 22px 0 28px;
+  padding: 16px 18px;
+  border: 1px solid #d8e7e2;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+#nice .table-of-contents ul,
+#nice .table-of-contents ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+#nice .table-of-contents a {
+  color: #31515c;
+  border: 0;
+  font-weight: 600;
+}
+
+#nice .table-container {
+  display: block;
+  width: 100%;
+  margin: 22px 0;
+  overflow-x: auto;
+  border: 1px solid #d6e4df;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+#nice table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  color: #26323d;
+  font-size: 15px;
+}
+
+#nice th,
+#nice td {
+  padding: 12px 14px;
+  border: 1px solid #e3ece8;
+  text-align: left;
+}
+
+#nice th {
+  background: #e9f6f2;
+  color: #123c4a;
+  font-weight: 800;
+}
+
+#nice tr:nth-child(even) td {
+  background: #fbfdfc;
+}
+
+#nice code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: #edf7f4;
+  color: #0f5f57;
+  font-family: Menlo, Consolas, Monaco, monospace;
+  font-size: 14px;
+}
+
+#nice pre {
+  margin: 22px 0;
+}
+
+#nice pre code {
+  display: -webkit-box;
+  font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+  border-radius: 0;
+  -webkit-overflow-scrolling: touch;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+}
+
+#nice pre code span {
+  line-height: 26px;
+}
+
+#nice pre.mac-style {
+  border: 1px solid #d7e2de;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  display: block;
+  background: #12232e;
+  box-shadow: none;
+}
+
+#nice pre.mac-style .mac-header {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #0e1b24;
+  border-radius: 8px 8px 0 0;
+  margin: 0;
+  line-height: 0;
+  font-size: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#nice pre.mac-style code {
+  display: block;
+  border-radius: 0 0 8px 8px;
+  background: #12232e;
+  padding: 0;
+  margin: 0;
+  margin-top: -4px;
+  line-height: 0;
+  vertical-align: top;
+}
+
+#nice .mac-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#nice .mac-dots,
+#nice .mac-lang,
+#nice .mac-dot {
+  font-size: 12px;
+  line-height: 1;
+}
+
+#nice .mac-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+#nice .mac-dot.red {
+  background: #FF5F56;
+}
+
+#nice .mac-dot.yellow {
+  background: #FFBD2E;
+}
+
+#nice .mac-dot.green {
+  background: #27C93F;
+}
+
+#nice .mac-lang {
+  color: #9fb8bd;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#nice .mac-body {
+  display: block;
+  padding: 16px;
+  overflow-x: auto;
+  color: #d9e8ea;
+  line-height: 26px;
+}
+
+#nice .mac-body .hljs-meta,
+#nice .mac-body .hljs-comment,
+#nice .mac-body .hljs-keyword,
+#nice .mac-body .hljs-string,
+#nice .mac-body .hljs-title,
+#nice .mac-body .hljs-function,
+#nice .mac-body .hljs-built_in,
+#nice .mac-body .hljs-class,
+#nice .mac-body .hljs-attr,
+#nice .mac-body .hljs-number,
+#nice .mac-body .hljs-variable,
+#nice .mac-body .hljs-type,
+#nice .mac-body .hljs-literal,
+#nice .mac-body .hljs-symbol,
+#nice .mac-body .hljs-bullet,
+#nice .mac-body .hljs-params {
+  display: inline;
+}
+
+#nice img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 22px auto 8px;
+  border-radius: 8px;
+}
+
+#nice figure {
+  margin: 24px 0;
+}
+
+#nice figcaption {
+  margin-top: 8px;
+  color: #7a8792;
+  font-size: 13px;
+  text-align: center;
+}
+
+#nice dl {
+  margin: 18px 0;
+}
+
+#nice dt {
+  margin-top: 14px;
+  color: #123c4a;
+  font-weight: 800;
+}
+
+#nice dd {
+  margin: 6px 0 12px 0;
+  padding-left: 16px;
+  border-left: 3px solid #d8e7e2;
+  color: #465866;
+}
+
+#nice .katex {
+  color: #183b56;
+  font-size: 1.02em;
+}
+
+#nice .katex-display {
+  margin: 22px 0;
+  padding: 18px 12px;
+  overflow-x: auto;
+  border: 1px solid #d8e7e2;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+#nice .note-card {
+  margin: 22px 0;
+  padding: 16px 18px;
+  border: 1px solid #cfe1dc;
+  border-radius: 8px;
+  background: #f4faf8;
+  color: #31515c;
+}
+
+#nice details {
+  margin: 20px 0;
+  padding: 14px 16px;
+  border: 1px solid #d8e7e2;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+#nice summary {
+  color: #123c4a;
+  font-weight: 800;
+}
