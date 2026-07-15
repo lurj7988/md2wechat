@@ -82,30 +82,47 @@ md2wechat sync-html article.html --title "文章标题" --author "作者名" --d
 
 ## 配置
 
-### 环境变量配置
+md2wechat 使用 JSON 配置文件，优先级从高到低：
 
-创建 `.env` 文件（参考 `.env.example`）：
+1. **CLI flag**（如 `--theme`、`--author`）—— 临时覆盖，最高优先级
+2. **项目配置** `./.md2wechat/config.json` —— 当前项目覆盖
+3. **全局配置** `~/.md2wechat/config.json` —— 跨项目共享，凭证只需配置一次
+4. **环境变量**（`WECHAT_APP_ID` 等）—— CI/容器场景后备
+
+把 AppID/AppSecret 放到全局配置，即可在任意目录使用：
 
 ```bash
-# 微信公众号配置
-WECHAT_APP_ID=your_app_id
-WECHAT_APP_SECRET=your_app_secret
-WECHAT_DEFAULT_AUTHOR=Your Name
-
-# 主题配置
-THEME=default
-CODE_THEME=atom-one-dark
+# 创建全局配置（模板见 config.example.json）
+mkdir -p ~/.md2wechat
+cp config.example.json ~/.md2wechat/config.json
+# 然后编辑 ~/.md2wechat/config.json 填入凭证
 ```
 
-### 配置说明
+`config.json` 格式：
 
-| 变量名 | 说明 | 必需 |
+```json
+{
+  "wechat": {
+    "appId": "your_app_id",
+    "appSecret": "your_app_secret",
+    "defaultAuthor": "Your Name"
+  },
+  "theme": "default",
+  "codeTheme": "atom-one-dark"
+}
+```
+
+### 配置项说明
+
+| 配置项 | 说明 | 必需 |
 |--------|------|------|
-| `WECHAT_APP_ID` | 微信公众号 AppID | 是（同步功能） |
-| `WECHAT_APP_SECRET` | 微信公众号 AppSecret | 是（同步功能） |
-| `WECHAT_DEFAULT_AUTHOR` | 默认作者名称 | 否 |
-| `THEME` | Markdown 主题名称 | 否 |
-| `CODE_THEME` | 代码高亮主题名称 | 否 |
+| `wechat.appId` | 微信公众号 AppID | 是（同步功能） |
+| `wechat.appSecret` | 微信公众号 AppSecret | 是（同步功能） |
+| `wechat.defaultAuthor` | 默认作者名称 | 否 |
+| `theme` | Markdown 主题名称 | 否 |
+| `codeTheme` | 代码高亮主题名称 | 否 |
+
+CI/容器场景可用环境变量覆盖：`WECHAT_APP_ID`、`WECHAT_APP_SECRET`、`WECHAT_DEFAULT_AUTHOR`、`THEME`、`CODE_THEME`。
 
 ## 命令行选项
 

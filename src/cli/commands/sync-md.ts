@@ -11,7 +11,7 @@ import type { ArticleData } from '../../types/index';
 import { readFile, fileExists, changeExtension, extractTitle, extractSummary, writeFile } from '../utils/helpers';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { loadConfig } from '../utils/config';
+import { loadConfig, requireWeChatCredentials } from '../utils/config';
 import { logger } from '../utils/logger';
 
 /**
@@ -74,6 +74,7 @@ async function syncMdAction(
 
     // Load configuration
     const config = await loadConfig();
+    requireWeChatCredentials(config);
 
     logger.info(`Reading: ${input}`);
 

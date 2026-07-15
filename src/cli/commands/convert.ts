@@ -6,6 +6,7 @@ import { Command } from 'commander';
 import { Parser } from '../../core/parser';
 import { Converter } from '../../core/converter';
 import { readFile, writeFile, fileExists } from '../utils/helpers';
+import { loadConfig } from '../utils/config';
 import { logger } from '../utils/logger';
 
 /**
@@ -34,14 +35,17 @@ async function convertAction(
     // Read markdown content
     const markdown = await readFile(input);
 
+    // Load configuration (theme defaults from config; flags override)
+    const config = await loadConfig();
+
     // Parse markdown to HTML
     const parser = new Parser();
     const html = parser.parse(markdown);
 
     // Convert to WeChat format
     const converter = new Converter({
-      theme: options.theme,
-      codeTheme: options.codeTheme
+      theme: options.theme || config.theme.name,
+      codeTheme: options.codeTheme || config.theme.codeTheme
     });
     const result = await converter.process(html);
 
@@ -66,7 +70,7 @@ export default new Command()
   .description('Convert Markdown to HTML for WeChat Official Account')
   .argument('<input>', 'Input Markdown file path')
   .argument('[output]', 'Output HTML file path (optional, prints to stdout if not provided)')
-  .option('-t, --theme <name>', 'Markdown theme name', 'default')
-  .option('-c, --code-theme <name>', 'Code highlight theme name', 'atom-one-dark')
+  .option('-t, --theme <name>', 'Markdown theme (overrides config)')
+  .option('-c, --code-theme <name>', 'Code highlight theme (overrides config)')
   .option('--stdout', 'Output to stdout instead of file')
   .action(convertAction);

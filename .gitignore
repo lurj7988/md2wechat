@@ -33,8 +33,10 @@ claude-*.txt
 # typescript
 *.tsbuildinfo
 
-# environment
-.env
+# md2wechat local config (contains credentials)
+.md2wechat/
+
+# python venv
 .venv
 
 # publish
@@ -48,3 +50,5 @@ test-files/
 .idea/
 
 .claude
+
+output/

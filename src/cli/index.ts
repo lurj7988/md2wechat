@@ -4,14 +4,11 @@
  */
 
 import { Command } from 'commander';
-import { getPackageVersion, loadEnv } from './utils/config.js';
+import { getPackageVersion } from './utils/config.js';
 import { logger } from './utils/logger.js';
 import convertCommand from './commands/convert.js';
 import syncMdCommand from './commands/sync-md.js';
 import syncHtmlCommand from './commands/sync-html.js';
-
-// Load environment variables
-loadEnv();
 
 // Create CLI program
 const program = new Command();
