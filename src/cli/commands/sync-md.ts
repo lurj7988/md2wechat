@@ -2,12 +2,12 @@
  * Sync-md command - Sync Markdown to WeChat Official Account
  */
 
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { Parser } from '../../core/parser';
 import { Converter } from '../../core/converter';
 import { WeChatApi } from '../../core/wechat-api';
 import { ImageHandler } from '../../core/image-handler';
-import type { ArticleData } from '../../types/index';
+import type { ArticleData, CodeLayout } from '../../types/index';
 import { readFile, fileExists, changeExtension, extractTitle, extractSummary, writeFile } from '../utils/helpers';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -61,6 +61,7 @@ async function syncMdAction(
     index?: number;
     theme?: string;
     codeTheme?: string;
+    codeLayout?: CodeLayout;
   }
 ): Promise<void> {
   try {
@@ -92,17 +93,19 @@ async function syncMdAction(
 
     // Parse markdown to HTML
     logger.debug('Parsing Markdown...');
-    const parser = new Parser();
+    const codeLayout = options.codeLayout || config.theme.codeLayout;
+    const parser = new Parser({ codeLayout });
     const html = parser.parse(markdown);
 
     // Convert to WeChat format
     logger.debug('Converting to WeChat format...');
     const themeName = options.theme || config.theme.name;
     const codeTheme = options.codeTheme || config.theme.codeTheme;
-    logger.info(`Theme: ${themeName} (code: ${codeTheme})`);
+    logger.info(`Theme: ${themeName} (code: ${codeTheme}, layout: ${codeLayout})`);
     const converter = new Converter({
       theme: themeName,
-      codeTheme
+      codeTheme,
+      codeLayout
     });
     const wechatHtml = await converter.process(html);
 
@@ -188,6 +191,10 @@ export default new Command()
   .option('--cover <path>', 'Cover image path')
   .option('--theme <name>', 'Markdown theme (overrides config, e.g. default, aurora)')
   .option('--code-theme <name>', 'Code highlight theme (overrides config, e.g. atom-one-dark, aurora, github)')
+  .addOption(
+    new Option('--code-layout <mode>', 'Code block layout (wrap or horizontal scroll)')
+      .choices(['wrap', 'scroll'])
+  )
   .option('-u, --media-id <media_id>', 'Media ID of existing draft to update (instead of creating new)')
   .option('-i, --index <number>', 'Article index in the draft (default: 0)', '0')
   .action(syncMdAction);

@@ -8,6 +8,7 @@ import { resolve, join, dirname } from 'path';
 import { logger } from '../cli/utils/logger';
 import { __dirname } from './paths';
 import { renderMathImages } from './math-renderer';
+import type { CodeLayout } from '../types/index';
 
 /**
  * Converter options
@@ -16,6 +17,7 @@ export interface ConverterOptions {
   theme?: string;
   codeTheme?: string;
   themeBasePath?: string;
+  codeLayout?: CodeLayout;
 }
 
 /**
@@ -37,10 +39,12 @@ export class Converter {
   private themeName: string;
   private codeThemeName: string;
   private themeBasePath: string;
+  private codeLayout: CodeLayout;
 
   constructor(options: ConverterOptions = {}) {
     this.themeName = options.theme || 'default';
     this.codeThemeName = options.codeTheme || 'atom-one-dark';
+    this.codeLayout = options.codeLayout || 'wrap';
     // Use package installation directory instead of current working directory
     this.themeBasePath = options.themeBasePath || resolve(__dirname, '../../themes');
   }
@@ -135,7 +139,7 @@ export class Converter {
    */
   async convertFile(inputPath: string, outputPath: string): Promise<void> {
     const { Parser } = await import('./parser');
-    const parser = new Parser();
+    const parser = new Parser({ codeLayout: this.codeLayout });
     const html = await parser.parseFile(inputPath);
     const result = await this.process(html);
     await this.saveToFile(result, outputPath);

@@ -3,6 +3,11 @@
 /* 此文件为空，所有样式都在 basic.css 中定义 */
 /* 如果需要自定义主题，可以在这里覆盖 basic.css 的样式 */
 
+/* 文章标题由公众号标题栏展示，正文中隐藏一级标题 */
+#nice h1 {
+  display: none;
+}
+
 /* h2 自定义样式：居中、橘黄色字体、编号显示、下划线与文字等长 */
 #nice h2 {
   display: table;
@@ -29,4 +34,31 @@
   background-color: #FF9500;
   margin-right: 8px;
   vertical-align: -3px;
+}
+
+/* Default 代码块：结构规则继承 basic.css，这里只定义主题视觉 */
+#nice pre.mac-style {
+  border: 1px solid #3b4650;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #282c34;
+  box-shadow: none;
+}
+
+#nice pre.mac-style .mac-header {
+  background: #1d2127;
+  border-radius: 0;
+}
+
+#nice pre.mac-style code {
+  background: #282c34;
+  border-radius: 0;
+}
+
+#nice .mac-lang {
+  color: #abb2bf;
+}
+
+#nice .mac-body {
+  color: #abb2bf;
 }

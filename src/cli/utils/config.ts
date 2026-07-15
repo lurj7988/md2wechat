@@ -7,7 +7,7 @@ import { join, dirname } from 'path';
 import { homedir } from 'os';
 import { fileURLToPath } from 'url';
 import { logger } from './logger.js';
-import type { Config, WeChatConfig, ThemeConfig } from '../../types/index';
+import type { CodeLayout, Config, WeChatConfig, ThemeConfig } from '../../types/index';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,6 +33,7 @@ interface RawConfig {
   };
   theme?: string;
   codeTheme?: string;
+  codeLayout?: string;
 }
 
 /**
@@ -64,7 +65,8 @@ function mergeRaw(base: RawConfig, override: RawConfig): RawConfig {
       defaultAuthor: override.wechat?.defaultAuthor ?? base.wechat?.defaultAuthor
     },
     theme: override.theme ?? base.theme,
-    codeTheme: override.codeTheme ?? base.codeTheme
+    codeTheme: override.codeTheme ?? base.codeTheme,
+    codeLayout: override.codeLayout ?? base.codeLayout
   };
 }
 
@@ -114,13 +116,21 @@ export async function loadConfig(): Promise<Config> {
     defaultAuthor: merged.wechat?.defaultAuthor || process.env.WECHAT_DEFAULT_AUTHOR || ''
   };
 
+  const codeLayoutValue = merged.codeLayout || process.env.CODE_LAYOUT || 'wrap';
+  const codeLayout: CodeLayout = codeLayoutValue === 'scroll' ? 'scroll' : 'wrap';
+  if (codeLayoutValue !== 'wrap' && codeLayoutValue !== 'scroll') {
+    logger.warning(`Invalid codeLayout "${codeLayoutValue}", falling back to "wrap"`);
+  }
+
   const theme: ThemeConfig = {
     name: merged.theme || process.env.THEME || 'default',
-    codeTheme: merged.codeTheme || process.env.CODE_THEME || 'atom-one-dark'
+    codeTheme: merged.codeTheme || process.env.CODE_THEME || 'atom-one-dark',
+    codeLayout
   };
 
   logger.debug(`THEME = ${theme.name}`);
   logger.debug(`CODE_THEME = ${theme.codeTheme}`);
+  logger.debug(`CODE_LAYOUT = ${theme.codeLayout}`);
 
   return { wechat, theme };
 }

@@ -14,9 +14,12 @@ export interface WeChatConfig {
 /**
  * Theme configuration
  */
+export type CodeLayout = 'wrap' | 'scroll';
+
 export interface ThemeConfig {
   name: string;
   codeTheme: string;
+  codeLayout: CodeLayout;
 }
 
 /**
@@ -27,6 +30,7 @@ export interface ConvertOptions {
   output?: string;
   theme?: string;
   codeTheme?: string;
+  codeLayout?: CodeLayout;
   stdout?: boolean;
 }
 

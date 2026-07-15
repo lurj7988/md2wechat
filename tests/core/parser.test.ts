@@ -167,13 +167,48 @@ describe('Parser', () => {
     });
 
     it('should parse markdown with Mac-style code blocks', () => {
-      const markdown = '```javascript\nconst x = 1;\n```';
+      const markdown = "```javascript\nconst message = 'hello world';\n```";
       const html = parser.parse(markdown);
       expect(html).toContain('mac-style');
       expect(html).toContain('mac-header');
       expect(html).toContain('mac-dots');
       expect(html).toContain('mac-dot');
       expect(html).toContain('mac-lang');
+      expect(html).toContain('<span class="mac-dot red">●</span>');
+      expect(html).toContain("'hello&nbsp;world'");
+      expect(html).not.toContain('&#x27;');
+    });
+
+    it('should preserve highlight class attributes while formatting code spaces', () => {
+      const markdown = '```typescript\ntype Article = { title: string };\n```';
+      const html = parser.parse(markdown);
+      expect(html).toContain('class="hljs-title class_"');
+      expect(html).not.toContain('class="hljs-title&nbsp;class_"');
+    });
+
+    it('should use explicit breaks in indented code blocks', () => {
+      const markdown = '    const answer = 42;\n    console.log(answer);';
+      const html = parser.parse(markdown);
+      expect(html).toContain('const&nbsp;answer&nbsp;=&nbsp;42;<br>console.log(answer);<br>');
+    });
+
+    it('should support horizontal scrolling code blocks', () => {
+      const scrollParser = new Parser({ codeLayout: 'scroll' });
+      const fenced = scrollParser.parse('```typescript\nfunction run() {\n  return true;\n}\n```');
+      const indented = scrollParser.parse('    echo hello');
+      expect(fenced).toContain('code-layout-scroll');
+      expect(fenced).toContain('style="display: inline-block; padding-left: 2ch;"');
+      expect(fenced).not.toContain('class="code-indent"');
+      expect(indented).toContain('code-layout-scroll');
+    });
+
+    it('should attach indentation to JSON tokens instead of whitespace-only spans', () => {
+      const json = new Parser({ codeLayout: 'scroll' }).parse(
+        '```json\n{\n  "type": "user",\n  "nested": {\n    "ok": true\n  }\n}\n```'
+      );
+      expect(json).toContain('padding-left: 2ch;');
+      expect(json).toContain('padding-left: 4ch;');
+      expect(json).not.toContain('class="code-indent"');
     });
   });
 

@@ -2,12 +2,13 @@
  * Convert command - Convert Markdown to HTML
  */
 
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { Parser } from '../../core/parser';
 import { Converter } from '../../core/converter';
 import { readFile, writeFile, fileExists } from '../utils/helpers';
 import { loadConfig } from '../utils/config';
 import { logger } from '../utils/logger';
+import type { CodeLayout } from '../../types/index';
 
 /**
  * Convert command implementation
@@ -18,6 +19,7 @@ async function convertAction(
   options: {
     theme?: string;
     codeTheme?: string;
+    codeLayout?: CodeLayout;
     stdout?: boolean;
   }
 ): Promise<void> {
@@ -39,13 +41,15 @@ async function convertAction(
     const config = await loadConfig();
 
     // Parse markdown to HTML
-    const parser = new Parser();
+    const codeLayout = options.codeLayout || config.theme.codeLayout;
+    const parser = new Parser({ codeLayout });
     const html = parser.parse(markdown);
 
     // Convert to WeChat format
     const converter = new Converter({
       theme: options.theme || config.theme.name,
-      codeTheme: options.codeTheme || config.theme.codeTheme
+      codeTheme: options.codeTheme || config.theme.codeTheme,
+      codeLayout
     });
     const result = await converter.process(html);
 
@@ -72,5 +76,9 @@ export default new Command()
   .argument('[output]', 'Output HTML file path (optional, prints to stdout if not provided)')
   .option('-t, --theme <name>', 'Markdown theme (overrides config)')
   .option('-c, --code-theme <name>', 'Code highlight theme (overrides config)')
+  .addOption(
+    new Option('--code-layout <mode>', 'Code block layout (wrap or horizontal scroll)')
+      .choices(['wrap', 'scroll'])
+  )
   .option('--stdout', 'Output to stdout instead of file')
   .action(convertAction);

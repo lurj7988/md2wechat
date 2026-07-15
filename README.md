@@ -108,7 +108,8 @@ cp config.example.json ~/.md2wechat/config.json
     "defaultAuthor": "Your Name"
   },
   "theme": "default",
-  "codeTheme": "atom-one-dark"
+  "codeTheme": "atom-one-dark",
+  "codeLayout": "wrap"
 }
 ```
 
@@ -121,8 +122,9 @@ cp config.example.json ~/.md2wechat/config.json
 | `wechat.defaultAuthor` | 默认作者名称 | 否 |
 | `theme` | Markdown 主题名称 | 否 |
 | `codeTheme` | 代码高亮主题名称 | 否 |
+| `codeLayout` | 代码布局：`wrap` 自动换行或 `scroll` 横向滚动 | 否 |
 
-CI/容器场景可用环境变量覆盖：`WECHAT_APP_ID`、`WECHAT_APP_SECRET`、`WECHAT_DEFAULT_AUTHOR`、`THEME`、`CODE_THEME`。
+CI/容器场景可用环境变量覆盖：`WECHAT_APP_ID`、`WECHAT_APP_SECRET`、`WECHAT_DEFAULT_AUTHOR`、`THEME`、`CODE_THEME`、`CODE_LAYOUT`。
 
 ## 命令行选项
 
@@ -132,6 +134,7 @@ CI/容器场景可用环境变量覆盖：`WECHAT_APP_ID`、`WECHAT_APP_SECRET`�
 |------|------|------|--------|
 | `--theme` | `-t` | Markdown 主题名称 | `default` |
 | `--code-theme` | `-c` | 代码高亮主题名称 | `atom-one-dark` |
+| `--code-layout` | - | `wrap` 自动换行或 `scroll` 横向滚动 | `wrap` |
 | `--stdout` | - | 输出到标准输出 | - |
 
 ### sync-md 命令
@@ -142,6 +145,7 @@ CI/容器场景可用环境变量覆盖：`WECHAT_APP_ID`、`WECHAT_APP_SECRET`�
 | `--author` | `-a` | 作者名称 | 从配置读取 |
 | `--digest` | `-d` | 文章摘要 | 自动提取 |
 | `--cover` | - | 封面图片路径 | - |
+| `--code-layout` | - | `wrap` 自动换行或 `scroll` 横向滚动 | `wrap` |
 | `--media-id` | `-u` | 更新现有草稿（media_id） | - |
 | `--index` | `-i` | 文章索引（用于更新） | `0` |
 
