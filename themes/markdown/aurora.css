@@ -7,7 +7,7 @@
   color: #1f2933;
   background: #fbfcfb;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.82;
 }
 
@@ -15,7 +15,7 @@
   margin: 0 0 16px;
   padding: 0;
   color: #2c3642;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.82;
 }
 
@@ -32,11 +32,13 @@
 }
 
 #nice h1 {
+  /* 隐藏正文 H1 标题：公众号编辑器会单独展示文章标题，正文内不再重复渲染大标题横幅 */
+  display: none;
   margin: 8px 0 28px;
   padding: 22px 0 20px;
   border-top: 5px solid #2a9d8f;
   border-bottom: 1px solid #dbe7e3;
-  font-size: 30px;
+  font-size: 28px;
 }
 
 #nice h2 {
@@ -46,29 +48,33 @@
   border-left: 5px solid #2a9d8f;
   border-bottom: 1px solid #d8e7e2;
   color: #123c4a;
-  font-size: 24px;
+  font-size: 22px;
 }
 
 #nice h3 {
   margin: 32px 0 14px;
   color: #264653;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 #nice h4 {
   margin: 26px 0 12px;
   color: #315a67;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 #nice h5,
 #nice h6 {
   margin: 22px 0 10px;
   color: #50616d;
-  font-size: 16px;
+  font-size: 15px;
 }
 
-#nice h2 .prefix,
+#nice h2 .prefix {
+  /* 隐藏二级标题自动编号：正文小标题无需"1. 2."序号 */
+  display: none;
+}
+
 #nice h3 .prefix {
   display: inline;
   color: #2a9d8f;
@@ -350,7 +356,7 @@
   min-width: 560px;
   border-collapse: collapse;
   color: #26323d;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 #nice th,
@@ -376,7 +382,7 @@
   background: #edf7f4;
   color: #0f5f57;
   font-family: Menlo, Consolas, Monaco, monospace;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 #nice pre {
@@ -391,11 +397,11 @@
   padding: 0;
   background: transparent;
   color: inherit;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 #nice pre code span {
-  line-height: 26px;
+  line-height: 22px;
 }
 
 #nice pre.mac-style {
@@ -477,7 +483,7 @@
   padding: 16px;
   overflow-x: auto;
   color: #d9e8ea;
-  line-height: 26px;
+  line-height: 22px;
 }
 
 #nice .mac-body .hljs-meta,
